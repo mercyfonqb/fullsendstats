@@ -1381,7 +1381,11 @@ Promise.all([window.FSC_PLAYERS,window.FSC_TEAM]).then(function(){
         var gd=new Date(data.generated_at);
         if(!isNaN(gd.getTime())){
           var lu=document.getElementById('lastUpdated'), lt=document.getElementById('lastUpdatedTime');
-          if(lu&&lt){ lt.textContent=gd.toISOString().slice(0,16).replace('T',' ')+' UTC'; lu.hidden=false; }
+          if(lu&&lt){
+            var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], z=function(n){ return (n<10?'0':'')+n; };
+            lt.textContent=gd.getUTCDate()+' '+MON[gd.getUTCMonth()]+' '+gd.getUTCFullYear()+', '+z(gd.getUTCHours())+':'+z(gd.getUTCMinutes())+' UTC';
+            lu.hidden=false;
+          }
         }
       }
       /* total clan members (e.g. 387) -> badge under the logo */
