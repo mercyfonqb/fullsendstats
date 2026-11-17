@@ -34,7 +34,7 @@ jobs:
       - name: Build dist
         run: |
           mkdir -p dist
-          cp index.html background.gif logo.png staff.json competitive_team.json discord_players.json fsc_stats.json dist/
+          cp index.html background.gif logo.png favicon.png favicon.ico staff.json competitive_team.json discord_players.json fsc_stats.json dist/
 
       - name: Deploy to Cloudflare
         uses: cloudflare/wrangler-action@v3
