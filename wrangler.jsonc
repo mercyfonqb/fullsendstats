@@ -1,0 +1,9 @@
+{
+  "name": "fullsendstats",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "fullsendstats.com", "custom_domain": true }
+  ],
+  "assets": { "directory": "./dist" }
+}

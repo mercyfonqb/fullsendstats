@@ -1,0 +1,49 @@
+name: Update stats and deploy
+
+on:
+  schedule:
+    - cron: "7 * * * *"      # каждый час в :07
+  workflow_dispatch:          # кнопка ручного запуска
+  push:
+    branches: [main]          # правки index.html/json тоже деплоятся
+
+concurrency:
+  group: fsc-update
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Parse stats
+        run: python clan_parser.py
+
+      - name: Build dist
+        run: |
+          mkdir -p dist
+          cp index.html background.gif staff.json competitive_team.json discord_players.json fsc_stats.json dist/
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Update Discord ranks
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python discord_bot.py

@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fullsendstats - FSC clan official leaderboard</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fullsendstats - FSC clan official leaderboard">
+<meta property="og:url" content="https://fullsendstats.malignant.workers.dev/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2285%22 font-size=%2260%22 text-anchor=%22middle%22>🤡</text><text x=%2250%22 y=%2240%22 font-size=%2260%22 text-anchor=%22middle%22>👑</text></svg>">
+<style>
+:root{
+  --bg:#fff; --tint:#f5f5f5; --tint-hover:#ececec; --fg:#000; --muted:#6a6a6a; --line:#000; --soft:#000;
+  --pad:clamp(20px,5vw,72px);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:"Inter Tight",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:clamp(17px,1.25vw,20px); line-height:1.6; -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- Page background ---------- */
+body::before{content:""; position:fixed; inset:0; z-index:-1; background:var(--bg) url("background.gif") center/cover no-repeat}
+
+/* ---------- Content ---------- */
+main{padding:clamp(24px,4vw,56px) var(--pad) 45px}
+section{
+  padding:8px 0;
+  display:grid; grid-template-columns:1fr; gap:24px;
+}
+@media (min-width:900px){
+  section{grid-template-columns:minmax(200px,1fr) 3fr; gap:24px clamp(32px,6vw,96px)}
+}
+h2{font-size:clamp(18px,1.7vw,23px); letter-spacing:-.025em; font-weight:700; margin:0; line-height:1.2}
+section.stack{grid-template-columns:1fr; max-width:1000px; margin-inline:auto}
+details.fold>summary{list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; width:100%; box-sizing:border-box; min-height:60px; padding:16px clamp(18px,2vw,28px); background:transparent; user-select:none; -webkit-tap-highlight-color:transparent}
+details.fold>summary:hover{background:rgba(0,0,0,.06)}
+.listed{font-size:1.15em; font-weight:500; max-width:none}
+.note-wrap{display:flex; justify-content:center; width:100%; margin-top:clamp(6px,.8vw,12px); padding-bottom:clamp(12px,1.5vw,20px)}
+.note{color:var(--muted)!important; text-align:center!important; font-size:.9em; max-width:80ch!important; width:100%; margin:0!important; padding:0!important}
+details.fold>summary *{pointer-events:none}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary h2{margin:0}
+details.fold>summary::after{content:""; flex:none; transition:transform .35s ease; width:10px; height:10px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-3px) rotate(45deg)}
+details.fold.is-open>summary::after{transform:translateY(3px) rotate(-135deg)}
+details.fold>summary:focus-visible{outline:2px solid var(--fg); outline-offset:-4px}
+.fold-body{padding:8px clamp(18px,2vw,28px) 22px}
+p{margin:0 0 16px; max-width:64ch}
+p:last-child{margin-bottom:0}
+.formula{
+  display:flex; flex-wrap:wrap; justify-content:center; gap:.15em .45em;
+  font-size: clamp(14px, 1.8vw, 24px); line-height:1.25; font-weight:800; letter-spacing:-.02em;
+  margin:0 0 clamp(28px,3vw,44px); max-width:none; text-align:center;
+}
+.duo-grid{display:grid; grid-template-columns:1fr; gap:40px; align-items:start}
+@media (min-width:900px){.duo-grid{grid-template-columns:1fr 1fr; gap:clamp(32px,5vw,80px)}}
+.rules{list-style:none; margin:0; padding:0; max-width:64ch}
+.rules li{padding:14px 0; border-top:1px solid var(--soft)}
+.rules li:first-child{border-top:0; padding-top:0}
+.muted{color:var(--muted)}
+
+.scroll{overflow-x:auto; max-width:100%}
+.tbl{width:100%!important; table-layout:fixed; border-collapse:separate!important; border-spacing:0!important; border:0!important; background:none!important; min-width:420px; font-variant-numeric:tabular-nums; font-size:clamp(18px,1.7vw,26px)!important}
+.tbl th,.tbl td{
+  text-align:center!important; vertical-align:middle!important;
+  border:0!important; border-bottom:1px solid var(--soft)!important;
+  padding:clamp(16px,1.8vw,26px) 12px!important; font-weight:400; color:var(--fg); background:none;
+}
+.tbl th{color:#000; font-size:.7em!important; font-weight:500; border-bottom:1px solid var(--line)!important}
+.tbl td.pts{font-weight:800}
+.tbl tr.best td{font-weight:700}
+.tbl.extbl{font-size:clamp(14px,1.1vw,17px)!important; table-layout:auto!important}
+.tbl.extbl th,.tbl.extbl td{padding:clamp(10px,1vw,14px) 10px!important}
+.tbl.extbl th{font-size:.8em!important; white-space:nowrap; vertical-align:middle!important}
+.tbl.extbl tbody tr:last-child td{border-bottom:0!important}
+.tbl.extbl tbody td{font-weight:400!important}
+.tbl.extbl tbody tr.best td{font-weight:700!important}
+.tbl.ranktbl{font-size:clamp(15px,1.2vw,18px)!important}
+.tbl.ranktbl th,.tbl.ranktbl td{padding:clamp(10px,1vw,14px) 12px!important}
+.tbl.ranktbl th{font-size:.78em!important}
+.ranktbl td{font-weight:700; letter-spacing:-.01em}
+.ranktbl td.sym{font-weight:400; color:#000; text-shadow:0 0 4px rgba(0,0,0,.35)}
+.ranktbl td.pct{font-weight:500}
+.ranktbl tr.god td{background:var(--fg)!important; color:var(--bg); border-bottom:0!important; padding:clamp(14px,1.4vw,20px) 12px!important}
+.ranktbl tr.god td:first-child{border-radius:16px 0 0 16px}
+.ranktbl tr.god td:last-child{border-radius:0 16px 16px 0}
+.tbl.ranktbl tr.gap td{padding:0!important; height:10px; border:0!important; background:none!important}
+.ranktbl tr.god td.sym{color:var(--bg)}
+
+.adv{list-style:none; margin:0; padding:0; display:grid; gap:0}
+@media (min-width:1200px){.adv{grid-template-columns:repeat(3,1fr); gap:0 40px}.adv li{border-top:1px solid var(--line)!important; padding-top:16px!important}}
+.adv li{padding:18px 0; border-top:1px solid var(--soft)}
+.adv li:first-child{border-top:0; padding-top:0}
+.adv b{display:block; font-weight:700; margin-bottom:4px}
+
+.note-wrap.rank-note{margin-top:clamp(14px,1.6vw,22px); padding-bottom:clamp(4px,.6vw,8px)}
+
+
+/* ---------- Header ---------- */
+.top{display:flex; flex-direction:column; align-items:center; gap:clamp(10px,1.2vw,16px); margin:0 0 clamp(28px,3.5vw,48px); text-align:center; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.55)}
+.brand{margin:0; font-family:"Press Start 2P","Courier New",monospace; font-weight:400; font-size:clamp(13px,4vw,32px); line-height:1.2; letter-spacing:0; color:#fff}
+.tagline{font-family:"Press Start 2P","Courier New",monospace; font-size:clamp(8px,2.3vw,12px); line-height:1.5}
+.stamp{font-family:"Press Start 2P","Courier New",monospace; font-size:clamp(7px,1.9vw,9px); line-height:1.5; opacity:.8}
+.brandwrap{position:relative; display:inline-block}
+.members-badge{position:absolute; left:calc(100% - 1.2em); top:calc(98% + 2px); z-index:2; transform-origin:0 0; transform:rotate(13deg); padding:.75em 1em; background:#141416; border:2px solid rgba(255,255,255,.9); border-radius:6px; box-shadow:0 4px 14px rgba(0,0,0,.45); font-family:"Press Start 2P","Courier New",monospace; font-size:clamp(6px,1.7vw,10px); line-height:1.4; color:#fff; text-shadow:none; white-space:nowrap; pointer-events:none}
+.members-badge[hidden]{display:none}
+.members-badge [hidden]{display:none}
+.members-badge b{font-weight:400; color:#ffd54a}
+
+/* ---------- Leaderboard ---------- */
+.lb{max-width:1028px; padding:14px; margin:-14px auto 0}
+.lbt{width:100%; min-width:740px; table-layout:fixed; border-collapse:separate; border-spacing:0 6px; font-size:clamp(12px,.9vw,14px); font-weight:700; color:#fff; font-variant-numeric:tabular-nums}
+.lbt th{background:#141416; color:#fff; font-size:.82em; font-weight:700; line-height:1.5; padding:14px 8px; text-align:center; white-space:nowrap}
+.lbt td{background:#141416; color:#fff; padding:11px 8px; text-align:center; vertical-align:middle; white-space:nowrap}
+.lbt th:first-child,.lbt td:first-child{border-radius:8px 0 0 8px}
+.lbt th:last-child,.lbt td:last-child{border-radius:0 8px 8px 0}
+.lbt th.l,.lbt td.who{text-align:left}
+.lbt td.who{display:table-cell; overflow:hidden; text-overflow:ellipsis}
+.lbt .av{display:inline-block; vertical-align:middle; width:28px; height:28px; margin-right:9px; border-radius:50%; background:#26262a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23606066'><circle cx='12' cy='9' r='4'/><path d='M4 20c0-4 4-6 8-6s8 2 8 6z'/></svg>") center/70% no-repeat}
+.lbt .av img{width:100%; height:100%; border-radius:50%; object-fit:cover; display:block}
+.lbt .nm{vertical-align:middle}
+.lbt .nm a{color:inherit; text-decoration:underline; text-underline-offset:2px}
+.lbt .nm a:hover{opacity:.8}
+.lbt .chk{vertical-align:middle; margin-left:2px}
+.lbt td.pt{font-size:1.1em; font-weight:800}
+.lbt th:nth-child(2),.lbt td:nth-child(2){padding-left:4px; padding-right:4px}
+.lbt td.nr{font-weight:500; font-size:.9em}
+.lbt tbody tr:first-child td.place{font-weight:800}
+
+/* ---------- Top 3: tinted rows, thin outline, glow and shimmer ---------- */
+.lbt tr.g1{--c:#e6c158; --glow:rgba(238,196,72,.6); --tint:#1d1709}
+.lbt tr.g2{--c:#cdd3dc; --glow:rgba(205,213,226,.5); --tint:#17191e}
+.lbt tr.g3{--c:#cd8346; --glow:rgba(205,127,56,.55); --tint:#1e140b}
+.lbt tr.g2 td{animation-delay:-2s,-.8s!important}
+.lbt tr.g3 td{animation-delay:-4s,-1.6s!important}
+.lbt tr.g1 td,.lbt tr.g2 td,.lbt tr.g3 td{
+  background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.2) 50%,transparent 58%) -1400px 0/1400px 100% no-repeat fixed, var(--tint);
+  border-top:1px solid var(--c); border-bottom:1px solid var(--c);
+  --l:0 0 0 0 transparent; --r:0 0 0 0 transparent;
+  animation:sheen 7s linear infinite, glowpulse 3.2s ease-in-out infinite;
+}
+.lbt tr.g1 td:first-child,.lbt tr.g2 td:first-child,.lbt tr.g3 td:first-child{border-left:1px solid var(--c); --l:-6px 0 10px -6px var(--glow)}
+.lbt tr.g1 td:last-child,.lbt tr.g2 td:last-child,.lbt tr.g3 td:last-child{border-right:1px solid var(--c); --r:6px 0 10px -6px var(--glow)}
+@keyframes sheen{from{background-position:-1400px 0}to{background-position:2400px 0}}
+@keyframes glowpulse{
+  0%,100%{box-shadow:0 -5px 9px -5px var(--glow), 0 5px 9px -5px var(--glow), var(--l), var(--r)}
+  50%{box-shadow:0 -8px 13px -5px var(--glow), 0 8px 13px -5px var(--glow), var(--l), var(--r)}
+}
+@media (prefers-reduced-motion:reduce){.lbt tr.g1 td,.lbt tr.g2 td,.lbt tr.g3 td{animation:none!important}}
+/* ---------- Leaderboard nav + search ---------- */
+.lbhead{max-width:1028px; margin:0 auto 8px; padding:0 14px}
+.lbbar{display:flex; flex-wrap:wrap; gap:8px; align-items:stretch}
+.lbnav{display:flex; flex-wrap:wrap; gap:8px; flex:1 1 100%; min-width:0}
+.lbnav::-webkit-scrollbar{display:none}
+.lbnav button{flex:1 1 auto; text-align:center; appearance:none; -webkit-appearance:none; border:1px solid transparent; border-radius:8px; background:#141416; color:#fff; font-family:inherit; font-size:clamp(12px,.9vw,14px); font-weight:700; line-height:1.5; padding:12px 14px; white-space:nowrap; cursor:pointer; transition:background .2s ease,color .2s ease; -webkit-tap-highlight-color:transparent}
+.lbnav button:hover{background:#26262a}
+.lbnav button.on{background:#fff; color:#000; cursor:default}
+.lbnav button:focus-visible,.lbsearch input:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.lbsearch{flex:2 1 190px; min-width:170px; display:flex}
+.lbsearch input{flex:1; min-width:0; appearance:none; -webkit-appearance:none; border:1px solid transparent; border-radius:8px; background:#141416 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23909096' stroke-width='2.4' stroke-linecap='round'><circle cx='10.5' cy='10.5' r='6.5'/><path d='M15.5 15.5L21 21'/></svg>") 12px center/16px no-repeat; color:#fff; font-family:inherit; font-size:16px; font-weight:500; line-height:1.5; padding:10px 12px 10px 36px}
+.lbsearch input::placeholder{color:#909096}
+@media (max-width:820px){.lbsearch{flex:1 1 100%}}
+.lbt td.empty{border-radius:8px!important; color:#909096; font-weight:500; padding:18px 8px}
+.lbt td.lbs{border-radius:8px!important; color:#909096; font-weight:500; padding:18px 8px}
+
+/* ---------- Competitive Team ---------- */
+.tc{max-width:1028px; margin:0 auto clamp(56px,7vw,110px); padding:0 14px; color:#fff; font-size:clamp(12px,.9vw,14px)}
+.tc-head{background:#141416; border-radius:8px; padding:18px 22px; margin-bottom:12px}
+.tc-title{font-size:1.6em; font-weight:800; letter-spacing:-.02em; line-height:1.2}
+.tc-title span{color:#e6c158}
+.tc-sub{margin-top:4px; color:#909096; font-weight:500}
+.tc-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-items:start}
+.tc-col{display:flex; flex-direction:column; gap:12px; min-width:0}
+.tc-group{grid-column:1/-1; display:flex; align-items:center; gap:10px; margin:10px 0 0; padding:10px 16px; background:#141416; border-radius:8px; color:#fff; font-size:1.1em; font-weight:800; letter-spacing:.01em}
+.tc-group:first-child{margin-top:0}
+.tc-group.pri{color:#e6c158}
+.tc-group span{padding:2px 8px; border-radius:6px; background:#26262a; color:#c8c8cc; font-size:.8em; font-weight:700}
+.tc-card{--tier:#e6c158; display:grid; grid-template-columns:64px minmax(0,1fr) auto; grid-template-areas:"av nm lead" "st st st"; column-gap:14px; row-gap:14px; align-items:center; background:#141416; border:1px solid #26262a; border-radius:12px; padding:18px; text-align:left; transition:transform .2s ease,border-color .2s ease}
+.tc-av{position:relative; grid-area:av}
+.tc-card:hover{transform:translateY(-2px); border-color:#e6c158}
+.tc-av{display:block; width:64px; height:64px; margin:0; border-radius:50%; background:#26262a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23606066'><circle cx='12' cy='9' r='4'/><path d='M4 20c0-4 4-6 8-6s8 2 8 6z'/></svg>") center/70% no-repeat; box-shadow:0 0 0 3px #141416,0 0 0 5px #3a3a40; transition:box-shadow .2s ease}
+.tc-card:hover .tc-av{box-shadow:0 0 0 3px #141416,0 0 0 5px #e6c158}
+.tc-av img{width:100%; height:100%; border-radius:50%; object-fit:cover; display:block}
+.tc-name{grid-area:nm; font-size:1.18em; font-weight:800; letter-spacing:-.01em; line-height:1.2; overflow-wrap:anywhere}
+.tc-name a{color:inherit; text-decoration:underline; text-underline-offset:2px}
+.tc-name a:hover{opacity:.8}
+.tc-name .chk{font-size:.9em}
+.tc-stats{grid-area:st; align-self:stretch; display:flex; align-items:center; justify-content:center; margin:0; padding:14px 8px; border:1px dashed #3a3a40; border-radius:8px; color:#909096; font-weight:500}
+.tc-desc{margin-top:10px; font-weight:500}
+/* ---------- Staff ---------- */
+.st-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px}
+.st-msg{grid-column:1/-1; background:#141416; border-radius:12px; padding:18px; color:#909096; font-weight:500; text-align:center}
+.st-card{display:flex; align-items:center; gap:16px; background:#141416; border:1px solid #26262a; border-radius:12px; padding:18px; transition:border-color .2s ease,transform .2s ease}
+.st-card{--hc:#e5484d}
+.st-card.tone-leader{--hc:#e6c158}
+.st-card.tone-dev{--hc:#8b5cf6}
+.st-card:hover{border-color:var(--hc); transform:translateY(-2px)}
+.st-av{flex:none; width:72px; height:72px; border-radius:50%; background:#26262a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23606066'><circle cx='12' cy='9' r='4'/><path d='M4 20c0-4 4-6 8-6s8 2 8 6z'/></svg>") center/62% no-repeat; transition:box-shadow .2s ease}
+.st-card:hover .st-av{box-shadow:0 0 0 3px #141416,0 0 0 5px var(--hc)}
+.st-av img{width:100%; height:100%; border-radius:50%; object-fit:cover; display:block}
+.st-info{min-width:0; flex:1; display:flex; flex-direction:column; align-items:flex-start; gap:6px}
+.st-name{font-size:1.25em; font-weight:800; letter-spacing:-.01em; line-height:1.2; overflow-wrap:anywhere}
+.st-roles{display:flex; flex-wrap:wrap; gap:6px}
+.st-role{background:#3a3a40; color:#fff; font-size:.75em; font-weight:800; letter-spacing:.06em; line-height:1; padding:4px 8px; border-radius:6px; text-transform:uppercase}
+.st-role.leader,.st-role.clan-leader{background:#e6c158; color:#000}
+.st-role.admin{background:#e5484d; color:#fff}
+.st-role.site-developer{background:#8b5cf6; color:#fff}
+.st-btn{display:inline-flex; align-items:center; gap:8px; margin-top:2px; background:#fff; color:#000; border-radius:8px; padding:8px 12px; font-weight:700; text-decoration:none; transition:opacity .2s ease}
+.st-btn:hover{opacity:.85}
+.st-btn:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.st-btn svg{width:16px; height:16px; flex:none}
+/* ---------- Competitive History ---------- */
+.hx-bar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px}
+.hx-filters{display:flex; gap:8px; flex-wrap:wrap}
+.hx-filters button,.hx-tog{appearance:none; -webkit-appearance:none; border:1px solid transparent; border-radius:8px; background:#141416; color:#fff; font-family:inherit; font-size:1em; font-weight:700; padding:9px 14px; cursor:pointer; transition:background .2s ease,color .2s ease}
+.hx-filters button:hover,.hx-tog:hover{background:#26262a}
+.hx-filters button.on{background:#fff; color:#000; cursor:default}
+.hx-filters small{opacity:.6; font-weight:700; margin-left:4px}
+.hx-filters button:focus-visible,.hx-tog:focus-visible,.hx-ev>summary:focus-visible,.hx-sub>summary:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.hx-list{display:grid; gap:8px}
+.hx-ev{background:#141416; border:1px solid #26262a; border-radius:12px; overflow:hidden; transition:border-color .2s ease}
+.hx-ev:hover,.hx-ev.is-open{border-color:#3a3a40}
+.hx-ev[hidden]{display:none}
+.hx-ev>summary,.hx-sub>summary{list-style:none; cursor:pointer}
+.hx-ev>summary::-webkit-details-marker,.hx-sub>summary::-webkit-details-marker{display:none}
+.hx-ev>summary{display:grid; grid-template-columns:46px minmax(0,1fr) auto 14px; align-items:center; gap:14px; padding:12px 16px}
+.hx-ico{display:flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:10px; background:#26262a; color:#c8c8cc; font-size:.95em; font-weight:800; letter-spacing:.02em}
+.hx-ico.gold{background:#e6c158; color:#000}
+.hx-ico.none{font-size:1.2em}
+.hx-ttl{display:flex; flex-direction:column; gap:4px; min-width:0}
+.hx-name{font-size:1.15em; font-weight:800; letter-spacing:-.01em; line-height:1.2}
+.hx-meta{display:flex; align-items:center; flex-wrap:wrap; gap:6px 8px; color:#909096; font-weight:500}
+.hx-tag{font-style:normal; background:#26262a; color:#c8c8cc; border-radius:5px; padding:2px 7px; font-size:.78em; font-weight:700; letter-spacing:.05em; text-transform:uppercase}
+.hx-sum{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px}
+.hx-chip{background:#26262a; border-radius:8px; padding:6px 10px; color:#c8c8cc; font-weight:500; white-space:nowrap}
+.hx-chip b{color:#fff; font-weight:800}
+.hx-chip.gold{background:#e6c158; color:#000}
+.hx-chip.gold b{color:#000}
+.hx-chev,.hx-sub>summary::after{content:""; width:7px; height:7px; border-right:2px solid #909096; border-bottom:2px solid #909096; transform:translateY(-3px) rotate(45deg); transition:transform .35s ease; justify-self:center}
+.hx-ev.is-open>summary .hx-chev,.hx-sub.is-open>summary::after{transform:translateY(3px) rotate(225deg)}
+.hx-body{padding:4px 16px 16px; border-top:1px solid #26262a}
+.hx-lab{margin:12px 0 6px; color:#909096; font-size:.85em; font-weight:700}
+.hx-pl{display:flex; flex-wrap:wrap; gap:6px; list-style:none; margin:0; padding:0}
+.hx-pl li{background:#26262a; border-radius:8px; padding:6px 10px; font-weight:700}
+.hx-st{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(var(--rows),auto); grid-auto-flow:column; gap:4px 10px; font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.hx-chev,.hx-sub>summary::after{transition:none}}
+@media (max-width:640px){.hx-st{grid-template-columns:1fr; grid-template-rows:none; grid-auto-flow:row}.hx-ev>summary{grid-template-columns:40px minmax(0,1fr) 14px}.hx-ico{width:40px; height:40px}.hx-sum{grid-column:2/3; grid-row:2; justify-content:flex-start}}
+.hx-st li{display:flex; align-items:center; gap:10px; padding:7px 10px; border-radius:8px; font-weight:700; background:linear-gradient(90deg,rgba(255,255,255,.09) var(--w,0%),#1d1d20 var(--w,0%))}
+.hx-st li i{font-style:normal; width:1.6em; color:#909096; text-align:center}
+.hx-st li span{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.hx-st li b{font-weight:800}
+.hx-st li.me{background:linear-gradient(90deg,rgba(230,193,88,.28) var(--w,100%),#1d1709 var(--w,100%)); color:#e6c158; box-shadow:inset 0 0 0 1px #e6c158}
+.hx-st li.me i{color:#e6c158}
+.hx-scroll{overflow-x:auto; max-width:100%}
+.hx-rec{display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px; margin:12px 0 4px; color:#909096; font-weight:500}
+.hx-dots{display:flex; gap:6px}
+.hx-dots i{width:14px; height:14px; border-radius:4px; background:#26262a}
+.hx-dots i.win{background:#5ee08a}
+.hx-dots i.loss{background:#ff6b6b}
+.hx-wr{flex:1 1 120px; max-width:260px; height:8px; border-radius:99px; background:rgba(255,107,107,.35); overflow:hidden}
+.hx-wr i{display:block; height:100%; background:#5ee08a; border-radius:99px}
+.hx-wr{display:none}
+@property --p{syntax:'<number>'; inherits:false; initial-value:0}
+@keyframes hxring{from{--p:0}}
+.hx-wrcard{display:flex; align-items:center; gap:18px; margin-top:14px; padding:16px 18px; border:1px solid #26262a; border-radius:12px; background:linear-gradient(135deg,#1b1b1e,#141416)}
+.hx-ring{--p:0; position:relative; flex:none; width:84px; height:84px; border-radius:50%; background:conic-gradient(#5ee08a calc(var(--p)*1%),rgba(255,107,107,.4) 0); display:flex; align-items:center; justify-content:center; animation:hxring 1.1s cubic-bezier(.2,.7,.2,1)}
+.hx-ring::before{content:""; position:absolute; inset:9px; border-radius:50%; background:#141416}
+.hx-ring b{position:relative; font-size:1.45em; font-weight:800; letter-spacing:-.02em; color:#fff}
+.hx-wrtxt{display:flex; flex-direction:column; gap:4px; min-width:0}
+.hx-wrlbl{color:#909096; font-size:.8em; font-weight:700; letter-spacing:.08em; text-transform:uppercase}
+.hx-wrtxt strong{font-size:1.2em; font-weight:800; letter-spacing:-.01em}
+.hx-wrleg{display:flex; gap:14px; margin-top:2px; color:#909096; font-weight:500}
+.hx-wrleg span{display:inline-flex; align-items:center; gap:6px}
+.hx-wrleg i{width:10px; height:10px; border-radius:3px}
+.hx-wrleg i.w{background:#5ee08a}
+.hx-wrleg i.l{background:rgba(255,107,107,.6)}
+@media (prefers-reduced-motion:reduce){.hx-ring{animation:none}}
+.hx-tbl{width:100%; min-width:560px; border-collapse:separate; border-spacing:0 4px; font-weight:700; font-variant-numeric:tabular-nums}
+.hx-tbl th{padding:6px 10px; color:#909096; font-size:.85em; font-weight:700; text-align:center; white-space:nowrap}
+.hx-tbl td{background:#1d1d20; padding:8px 10px; text-align:center; white-space:nowrap}
+.hx-tbl td:first-child{border-radius:8px 0 0 8px}
+.hx-tbl td:last-child{border-radius:0 8px 8px 0}
+.hx-tbl td.n{color:#909096; width:1%}
+.hx-rp{color:#fff; text-decoration:underline; text-underline-offset:2px}
+.hx-rp:hover{opacity:.8}
+.hx-res{display:inline-block; min-width:52px; padding:3px 10px; border-radius:6px; font-weight:800; font-size:.9em}
+.hx-res.win{background:rgba(94,224,138,.14); color:#5ee08a}
+.hx-res.loss{background:rgba(255,107,107,.14); color:#ff6b6b}
+.hx-at{color:#909096; font-weight:500}
+.hx-res{margin-right:8px}
+.hx-mt{display:inline-grid; grid-template-columns:minmax(4.5em,1fr) auto minmax(4.5em,1fr); column-gap:.45em; align-items:baseline}
+.hx-mt b{font-weight:inherit}
+.hx-mt b:first-child{text-align:right}
+.hx-mt b:last-child{text-align:left}
+.hx-mt i{font-style:normal}
+.hx-foot{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px 16px; margin-top:8px; color:#909096; font-weight:500}
+.hx-btn{display:inline-block; background:#fff; color:#000; border-radius:8px; padding:9px 14px; font-weight:700; text-decoration:none; transition:opacity .2s ease}
+.hx-btn:hover{opacity:.85}
+.hx-foot-end{margin-top:14px}
+.hx-note{font-size:.9em; line-height:1.4}
+.hx-teams{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px; margin-top:12px}
+.hx-team{background:#1d1d20; border-radius:10px; padding:14px}
+.hx-tname{font-size:1.1em; font-weight:800; margin-bottom:12px}
+.hx-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.hx-step{position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:3px; padding-top:2px}
+.hx-step:not(:last-child)::after{content:""; position:absolute; top:15px; left:calc(50% + 20px); right:calc(-50% + 20px); height:2px; background:#3a3a40}
+.hx-step .dot{display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; font-weight:800; background:#26262a; color:#909096}
+.hx-step.ok .dot{background:rgba(94,224,138,.18); color:#5ee08a}
+.hx-step.fail .dot{background:rgba(255,107,107,.18); color:#ff6b6b}
+.hx-step b{font-weight:700}
+.hx-step small{color:#909096; font-weight:500; line-height:1.3}
+.hx-sub{margin-top:12px; background:#1d1d20; border-radius:10px; padding:0 14px}
+.hx-sub>summary{display:flex; justify-content:space-between; align-items:center; padding:12px 0; font-weight:700}
+.hx-sub[open]{padding-bottom:12px}
+.hx-sub-static{padding-bottom:12px}
+.hx-sub-h{padding:12px 0 6px; font-weight:700}
+.hx-team{display:flex; flex-direction:column}
+.hx-team .hx-steps{margin-bottom:12px}
+.hx-team .hx-lab{margin-top:auto; margin-bottom:6px}
+.hx-tbl.hx-rank td.n{width:auto}
+.hx-tbl tr.me td{background:rgba(230,193,88,.16); color:#e6c158}
+.hx-seed{width:100%; min-width:560px; border-collapse:separate; border-spacing:0 4px; font-weight:700; font-variant-numeric:tabular-nums}
+.hx-seed th{padding:6px 10px; color:#909096; font-size:.85em; font-weight:700; text-align:center; white-space:nowrap}
+.hx-seed td{background:#26262a; padding:7px 10px; text-align:center; white-space:nowrap}
+.hx-seed td:first-child{border-radius:8px 0 0 8px}
+.hx-seed td:last-child{border-radius:0 8px 8px 0}
+.hx-seed td.rk{color:#909096}
+.hx-seed td.q{background:rgba(94,224,138,.16); color:#8be8ab}
+.hx-seed td.e{background:rgba(255,107,107,.16); color:#ff9b9b}
+.hx-seed td.me{box-shadow:inset 0 0 0 2px #e6c158; color:#e6c158}
+.hx-legend{display:flex; gap:16px; margin-top:6px; color:#909096; font-weight:500}
+.hx-legend i{display:inline-block; width:12px; height:12px; margin-right:6px; border-radius:3px; vertical-align:-1px}
+.hx-legend i.q{background:#5ee08a}
+.hx-legend i.e{background:#ff6b6b}
+.tc-card{position:relative}
+.tc-card.lead{border-color:#e6c158; background:#1d1709; box-shadow:0 0 0 1px #e6c158,0 0 20px -4px rgba(238,196,72,.55)}
+.tc-card.lead .tc-av{background-color:#26262a; box-shadow:0 0 0 3px #1d1709,0 0 0 5px #e6c158}
+.tc-lead{grid-area:lead; justify-self:end; background:#e6c158; color:#000; font-size:.8em; font-weight:800; letter-spacing:.04em; line-height:1; padding:5px 8px; border-radius:6px}
+.tc-empty{grid-column:1/-1; background:#141416; border-radius:8px; padding:18px; text-align:center; color:#909096; font-weight:500; margin:0; max-width:none}
+/* player stats inside team cards (filled from fsc_stats.json) */
+.tc-stats.ps{display:block; padding:0; border:0; border-radius:0; text-align:left; color:#c8c8cc}
+.ps-h{display:flex; justify-content:space-between; align-items:center; gap:10px; margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid #26262a; color:#e6c158; font-size:.85em; font-weight:800; letter-spacing:.06em; text-transform:uppercase}
+.ps-sel{appearance:none; -webkit-appearance:none; margin:0; padding:1px 22px 1px 8px; line-height:1.25; background:#26262a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' fill='none' stroke='%23c8c8cc' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l4 4 4-4'/></svg>") right 7px center/9px no-repeat; border:1px solid #3a3a40; border-radius:5px; color:#fff; font:inherit; font-size:.92em; font-weight:700; letter-spacing:0; text-transform:none; cursor:pointer; color-scheme:dark; transition:border-color .2s ease}
+.ps-sel:hover{border-color:var(--tier)}
+.ps-sel:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.ps-tiles{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:10px}
+.ps-tile{display:flex; flex-direction:column; gap:3px; min-width:0; padding:10px 11px; background:#1d1d20; border-radius:10px}
+.ps-tile .tl{color:#909096; font-size:.72em; font-weight:700; letter-spacing:.05em; text-transform:uppercase}
+.ps-tile .tv{color:#fff; font-size:1.1em; font-weight:800; font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
+.ps-tile .ts{min-height:1em; color:#909096; font-size:.85em; font-weight:500}
+.ps-tier{color:var(--tier)}
+.ps-sub{display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px}
+.ps-top{color:#c8c8cc; font-weight:700; white-space:nowrap}
+.ps-q{display:inline-grid; place-items:center; width:16px; height:16px; border-radius:50%; background:#2e2e33; color:#c8c8cc; font-size:.8em; font-weight:800; line-height:1; cursor:help; user-select:none; transition:background .2s ease,color .2s ease}
+.ps-q:hover,.ps-q:focus-visible{background:#e6c158; color:#000; outline:none}
+.ps-tip{position:fixed; z-index:9999; max-width:260px; padding:10px 12px; background:#26262a; color:#fff; border:1px solid #3a3a40; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.45); font-size:12px; font-weight:500; line-height:1.45; pointer-events:none}
+.ps-tip code{display:block; margin:4px 0; padding:4px 6px; border-radius:5px; background:#141416; color:#e6c158; font-family:inherit; font-weight:700}
+.ps-tip[hidden]{display:none}
+.ps-hp{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:4px 8px}
+.ps-hp .ps-chip{margin-left:auto}
+.ps-chip{display:inline-block; padding:1px 5px; border-radius:4px; background:rgba(255,255,255,.07); color:var(--tier); font-size:.64em; font-weight:800; letter-spacing:.04em; line-height:1.3}
+.ps-modes{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+.ps-mode{padding:12px 14px; background:#1d1d20; border-radius:10px}
+.ps-mode .mh{margin-bottom:8px; color:#909096; font-size:.75em; font-weight:800; letter-spacing:.06em; text-transform:uppercase}
+.ps-mode .big{color:#fff; font-size:1.8em; font-weight:800; letter-spacing:-.02em; line-height:1.1; font-variant-numeric:tabular-nums}
+.ps-mode .big small{margin-left:6px; color:#909096; font-size:.4em; font-weight:600; letter-spacing:0}
+.ps-bar{height:6px; margin:8px 0 10px; border-radius:3px; background:#2e2e33; overflow:hidden}
+.ps-bar i{display:block; height:100%; border-radius:3px; background:var(--tier)}
+.ps-mb{display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px}
+.ps-rc{display:flex; flex-direction:column; align-items:center; gap:3px; flex:none}
+.ps-rc small{color:#909096; font-size:.7em; font-weight:600}
+.ps-ring{--p:0; position:relative; display:grid; place-items:center; width:60px; height:60px; border-radius:50%; background:conic-gradient(var(--tier) calc(var(--p)*1%),#2e2e33 0)}
+.ps-ring::before{content:""; position:absolute; inset:6px; border-radius:50%; background:#1d1d20}
+.ps-ring span{position:relative; color:#fff; font-size:.85em; font-weight:800; font-variant-numeric:tabular-nums}
+.ps-ml{flex:1 1 96px; min-width:0}
+.ps-r{display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:3px 0; font-variant-numeric:tabular-nums}
+.ps-r>span{white-space:nowrap}
+.ps-r>span:first-child{color:#909096; font-weight:500}
+.ps-r>span:last-child{color:#fff; font-weight:700; text-align:right}
+.ps-r.w>span:last-child{color:#5ee08a}
+.ps-r.l>span:last-child{color:#ff6b6b}
+.ps-r i{color:#909096; font-style:normal; font-weight:500}
+.ps-na{padding:3px 0; color:#909096; font-style:italic; font-weight:500}
+.ps-err{color:#ff9b9b}
+@media (max-width:820px){
+  .tc-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){
+  .tc-card{padding:14px}
+  .ps-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ps-modes>.ps-mode:first-child,.ps-modes>.ps-mode:last-child{grid-column:1/-1}
+}
+.upd{margin-bottom:6px}
+details.fold{background:rgba(255,255,255,.55); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-radius:16px; overflow:hidden; font-size:.92em}
+.links{display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:14px clamp(24px,4vw,48px); margin:clamp(28px,3vw,44px) auto 0; padding-bottom:8px}
+.links a{display:inline-flex; align-items:center; gap:10px; color:#fff; font-weight:700; font-size:.95em; text-decoration:none; text-shadow:0 1px 8px rgba(0,0,0,.6); transition:opacity .2s ease, transform .2s ease}
+.links a:hover{opacity:.8; transform:translateY(-1px)}
+.links a:focus-visible{outline:2px solid #fff; outline-offset:4px; border-radius:6px}
+.links svg{width:22px; height:22px; flex:none; filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))}
+.disclaimer{max-width:1000px; margin:clamp(24px,3vw,40px) auto 0; text-align:center; padding:0 clamp(18px,2vw,28px); text-align:center; color:#9a9a9a; font-size:.72em; line-height:1.5; text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.disclaimer p{margin:0 auto 6px; max-width:none; text-align:center}
+.verified-note{
+  max-width:800px; 
+  margin:0 auto 20px; /* Reduced the bottom margin (was up to 110px) */
+  padding:0 14px; 
+  text-align:center; 
+  color:#8a8a8f;      /* Made the color slightly darker/grayer so it's less eye-catching */
+  font-size:0.62em;   /* Made the font even smaller */
+  line-height:1.4; 
+  text-shadow:0 1px 6px rgba(0,0,0,.7);
+}
+.verified-note[hidden]{display:none}
+footer{max-width:1000px; margin:0 auto; padding:24px clamp(18px,2vw,28px) 0; color:#fff; font-size:.85em; text-shadow:0 1px 8px rgba(0,0,0,.6)}
+
+/* ---------- Leaderboard: click a player -> stats dropdown ---------- */
+.lbt tr.lb-click{cursor:pointer}
+.lbt tr.lb-click:focus-visible{outline:2px solid #fff; outline-offset:-2px}
+.lbt tr.lb-click:not(.g1):not(.g2):not(.g3):hover td,.lbt tr.lb-click.is-open:not(.g1):not(.g2):not(.g3) td{background:#1d1d20}
+.lbt td.who{position:relative; padding-right:30px}
+.lb-chev{position:absolute; right:12px; top:50%; width:7px; height:7px; border-right:2px solid #909096; border-bottom:2px solid #909096; transform:translateY(-70%) rotate(45deg); transition:transform .25s ease,border-color .2s ease}
+.lbt tr.lb-click:hover .lb-chev{border-color:#fff}
+.lbt tr.is-open .lb-chev{transform:translateY(-30%) rotate(-135deg)}
+.lb-detail{display:none}
+.lb-detail.show{display:table-row}
+.lb-detail.filtered{display:none!important}
+.lbt td.lbd-cell{padding:0; border:1px solid #26262a; border-radius:8px; background:#141416; text-align:left; white-space:normal; font-weight:500; color:#c8c8cc}
+.lbd-wrap{display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease}
+.lbd-wrap.open{grid-template-rows:1fr}
+.lbd-clip{min-height:0; overflow:hidden}
+.lbd-in{position:sticky; left:0; width:min(100%,calc(100vw - 2*var(--pad) - 30px)); padding:14px 14px 16px}
+.lbd-actions{display:flex; justify-content:flex-end; gap:8px; margin-bottom:10px}
+.lbd-btn{appearance:none; -webkit-appearance:none; display:inline-flex; align-items:center; gap:6px; margin:0; padding:5px 11px; border:1px solid #3a3a40; border-radius:6px; background:#26262a; color:#fff; font:inherit; font-size:.9em; font-weight:700; line-height:1.4; text-decoration:none; cursor:pointer; transition:border-color .2s ease,background .2s ease}
+.lbd-btn:hover{border-color:#e6c158; background:#2e2e33}
+.lbd-btn:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.lbd-box.ps{display:block; text-align:left; color:#c8c8cc}
+@media (prefers-reduced-motion:reduce){.lbd-wrap,.lb-chev{transition:none}}
+
+/* ---------- Compare players ---------- */
+.cmp{--ca:#e6c158; --cb:#5aa9ff}
+.cp-head{display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:12px; align-items:stretch; margin-bottom:12px}
+.cp-card{--c:#e6c158; position:relative; display:flex; flex-direction:column; align-items:center; gap:9px; padding:22px 16px 16px; background:#141416; border:1px solid #26262a; border-radius:14px; text-align:center; transition:border-color .25s ease,box-shadow .25s ease}
+.cp-card.a{--c:var(--ca)}
+.cp-card.b{--c:var(--cb)}
+.cp-card.lead{border-color:var(--c); box-shadow:0 0 0 1px var(--c),0 0 28px -6px var(--c)}
+.cp-card.empty{justify-content:center; min-height:230px; border-style:dashed; border-color:#3a3a40}
+.cp-badge{position:absolute; top:10px; right:10px; display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:6px; background:var(--c); color:#000; font-size:.75em; font-weight:800; letter-spacing:.05em; line-height:1}
+.cp-badge i{width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:7px solid #000}
+.cp-av{width:96px; height:96px; flex:none; border-radius:50%; background:#26262a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23606066'><circle cx='12' cy='9' r='4'/><path d='M4 20c0-4 4-6 8-6s8 2 8 6z'/></svg>") center/70% no-repeat; box-shadow:0 0 0 3px #141416,0 0 0 5px var(--c)}
+.cp-av img{width:100%; height:100%; border-radius:50%; object-fit:cover; display:block}
+.cp-name{font-size:1.35em; font-weight:800; letter-spacing:-.01em; line-height:1.2; overflow-wrap:anywhere}
+.cp-name a{color:inherit; text-decoration:underline; text-underline-offset:2px}
+.cp-name a:hover{opacity:.8}
+.cp-rank{color:#c8c8cc; font-weight:700}
+.cp-tags{display:flex; flex-wrap:wrap; justify-content:center; gap:6px}
+.cp-tag{padding:3px 9px; border-radius:6px; background:#26262a; color:#c8c8cc; font-size:.9em; font-weight:700}
+.cp-info{color:#909096; font-weight:500}
+.cp-won{color:#909096; font-weight:700; font-size:.9em}
+.cp-won b{color:var(--c); font-size:1.15em}
+.cp-card .ps-sel{align-self:center}
+.cp-pickwrap{position:relative; width:100%; margin-top:auto; padding-top:4px}
+.cp-change,.cp-choose{appearance:none; -webkit-appearance:none; width:100%; margin:0; padding:9px 12px; border:1px solid #3a3a40; border-radius:8px; background:#26262a; color:#fff; font:inherit; font-weight:700; cursor:pointer; transition:border-color .2s ease,background .2s ease}
+.cp-change:hover,.cp-choose:hover{border-color:var(--c); background:#2e2e33}
+.cp-change:focus-visible,.cp-choose:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.cp-choose{padding:16px 18px; font-size:1.1em}
+.cp-mid{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px}
+.cp-vs{display:grid; place-items:center; width:50px; height:50px; border-radius:50%; background:#141416; border:1px solid #3a3a40; color:#c8c8cc; font-weight:800; letter-spacing:.05em}
+.cp-swap{appearance:none; -webkit-appearance:none; display:grid; place-items:center; width:34px; height:34px; margin:0; padding:0; border:1px solid #3a3a40; border-radius:50%; background:#26262a; color:#fff; font:inherit; font-size:1.1em; line-height:1; cursor:pointer; transition:transform .3s ease,border-color .2s ease}
+.cp-swap:hover{border-color:#fff; transform:rotate(180deg)}
+.cp-swap:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.cp-swap[disabled]{opacity:.35; pointer-events:none}
+.cp-pop{position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:40; padding:8px; background:#1d1d20; border:1px solid #3a3a40; border-radius:10px; box-shadow:0 14px 34px rgba(0,0,0,.6); text-align:left}
+.cp-search{appearance:none; -webkit-appearance:none; width:100%; margin:0; padding:9px 11px; border:1px solid #3a3a40; border-radius:8px; background:#141416; color:#fff; font:inherit; font-weight:500}
+.cp-search::placeholder{color:#909096}
+.cp-search:focus-visible{outline:2px solid #fff; outline-offset:1px}
+.cp-list{display:flex; flex-direction:column; gap:2px; max-height:290px; margin-top:6px; overflow-y:auto}
+.cp-item{appearance:none; -webkit-appearance:none; display:flex; align-items:center; gap:10px; width:100%; margin:0; padding:7px 8px; border:0; border-radius:8px; background:transparent; color:#fff; font:inherit; text-align:left; cursor:pointer}
+.cp-item:hover,.cp-item:focus-visible{background:#2a2a2e; outline:none}
+.cp-item.dis{opacity:.4; cursor:not-allowed}
+.cp-item .av{flex:none; width:30px; height:30px; border-radius:50%; background:#26262a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23606066'><circle cx='12' cy='9' r='4'/><path d='M4 20c0-4 4-6 8-6s8 2 8 6z'/></svg>") center/70% no-repeat; overflow:hidden}
+.cp-item .av img{width:100%; height:100%; object-fit:cover; display:block}
+.cp-item .t{flex:1; min-width:0}
+.cp-item .t b{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700}
+.cp-item .t small{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#909096; font-size:.85em; font-weight:500}
+.cp-item .fse{flex:none; padding:2px 6px; border-radius:5px; background:#e6c158; color:#000; font-size:.75em; font-weight:800; letter-spacing:.04em}
+.cp-none{padding:12px 8px; color:#909096; font-weight:500; text-align:center}
+.cp-sum{margin-bottom:12px; padding:14px 18px 16px; background:#141416; border-radius:12px}
+.cp-sumrow{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.cp-sumn{font-size:2.1em; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
+.cp-sumn.a{color:var(--ca)}
+.cp-sumn.b{color:var(--cb)}
+.cp-sumlbl{color:#909096; font-size:.8em; font-weight:800; letter-spacing:.07em; line-height:1.4; text-align:center; text-transform:uppercase}
+.cp-sumlbl small{display:block; font-size:.9em; font-weight:600; letter-spacing:.03em; text-transform:none}
+.cp-tug{display:flex; height:10px; gap:3px; margin-top:12px; border-radius:5px; overflow:hidden}
+.cp-tug i{display:block; height:100%; min-width:0; border-radius:3px; flex-grow:1; flex-basis:0; transition:flex-grow .6s cubic-bezier(.2,.7,.2,1)}
+.cp-tug i.a{background:var(--ca)}
+.cp-tug i.b{background:var(--cb)}
+.cp-tug i.t{background:#3a3a40}
+.cp-panel{padding:4px 18px 14px; background:#141416; border-radius:12px}
+.cp-sech{display:flex; justify-content:space-between; align-items:center; gap:10px; margin:14px 0 4px; padding-bottom:8px; border-bottom:1px solid #26262a; color:#e6c158; font-size:.85em; font-weight:800; letter-spacing:.06em; text-transform:uppercase}
+.cp-sc{color:#909096; font-variant-numeric:tabular-nums}
+.cp-sc b.a{color:var(--ca)}
+.cp-sc b.b{color:var(--cb)}
+.cp-row{display:grid; grid-template-columns:minmax(0,1fr) minmax(96px,150px) minmax(0,1fr); gap:6px 14px; align-items:center; margin:2px -10px; padding:9px 10px; border-radius:8px}
+.cp-row[data-res=a]{background:linear-gradient(90deg,rgba(230,193,88,.09),transparent 48%)}
+.cp-row[data-res=b]{background:linear-gradient(270deg,rgba(90,169,255,.09),transparent 48%)}
+.cp-label{color:#909096; font-size:.8em; font-weight:700; letter-spacing:.05em; line-height:1.25; text-align:center; text-transform:uppercase}
+.cp-label em{display:block; margin-top:2px; color:#6c6c72; font-size:.9em; font-style:normal; letter-spacing:.02em; text-transform:none}
+.cp-side{--c:var(--ca); display:flex; flex-direction:column; gap:6px; min-width:0}
+.cp-side.b{--c:var(--cb); align-items:flex-start}
+.cp-side.a{align-items:flex-end}
+.cp-top{display:flex; align-items:center; gap:7px; font-variant-numeric:tabular-nums}
+.cp-side.b .cp-top{flex-direction:row-reverse}
+.cp-val{color:#c8c8cc; font-size:1.15em; font-weight:800}
+.cp-side.win .cp-val{color:#fff; font-size:1.3em}
+.cp-side.lose .cp-val{color:#909096; font-weight:700}
+.cp-up{flex:none; width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:8px solid var(--c); filter:drop-shadow(0 0 4px var(--c))}
+.cp-delta{padding:1px 6px; border-radius:5px; background:rgba(255,255,255,.08); background:color-mix(in srgb,var(--c) 20%,transparent); color:var(--c); font-size:.78em; font-weight:800; white-space:nowrap}
+.cp-bar{display:flex; width:100%; height:8px; border-radius:4px; background:#2a2a2e}
+.cp-side.a .cp-bar{justify-content:flex-end}
+.cp-bar i{display:block; width:0; height:100%; border-radius:4px; background:var(--c); opacity:.6; transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.cp-side.win .cp-bar i{opacity:1; box-shadow:0 0 10px -1px var(--c)}
+.cp-side.lose .cp-bar i{opacity:.3}
+.cp-row[data-res=tie] .cp-bar i{opacity:.85}
+.cp-panel-empty{padding:0 18px}
+.cp-empty{padding:36px 18px; text-align:center; color:#909096; font-weight:500}
+@media (max-width:720px){
+  .cp-head{position:relative; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+  .cp-card{gap:6px; padding:18px 8px 10px; font-size:.92em}
+  .cp-card.a{grid-column:1; grid-row:1}
+  .cp-card.b{grid-column:2; grid-row:1}
+  .cp-av{width:64px; height:64px}
+  .cp-name{font-size:1.1em}
+  .cp-badge{top:6px; right:6px; padding:3px 6px}
+  .cp-mid{position:absolute; left:50%; top:34px; z-index:3; gap:6px; transform:translateX(-50%)}
+  .cp-vs{width:34px; height:34px; font-size:.8em}
+  .cp-swap{width:28px; height:28px; font-size:1em}
+  .cp-pop{right:auto; min-width:min(280px,calc(100vw - 2*var(--pad) - 4px))}
+  .cp-card.b .cp-pop{left:auto; right:0}
+  .cp-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .cp-label{grid-column:1/-1; order:-1}
+  .cp-sumn{font-size:1.7em}
+}
+@media (prefers-reduced-motion:reduce){.cp-bar i,.cp-tug i,.cp-swap,.cp-card{transition:none}}
+
+/* ---------- Rank icons (shared) ---------- */
+.rk-ico{display:inline-block; flex:none; line-height:0; width:32px; height:32px}
+.rk-ico svg{display:block; width:100%; height:100%; overflow:visible}
+.rk-ico svg{filter:drop-shadow(0 2px 5px rgba(0,0,0,.45))}
+.rk-ico.god svg{filter:drop-shadow(0 0 6px rgba(255,190,70,.55))}
+@keyframes rkgloss{from{transform:translateX(-56px)}to{transform:translateX(64px)}}
+.rk-ico.shine svg{filter:drop-shadow(0 0 7px var(--glow,rgba(238,196,72,.6)))}
+.rk-ico.shine .rk-gloss{animation:rkgloss 3.2s ease-in-out infinite}
+
+/* ---------- Competitive Team: rank (top right) + clan contribution ---------- */
+.tc-side{grid-area:lead; justify-self:end; align-self:start; display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:0; max-width:230px}
+.tc-rank{display:inline-flex; align-items:center; gap:8px; max-width:100%; padding:4px 11px 4px 5px; border-radius:8px; background:#26262a; border:1px solid #3a3a40; color:#fff; font-size:.9em; font-weight:800; line-height:1.2; text-align:left}
+.tc-rank span{min-width:0; overflow-wrap:anywhere}
+.tc-rank.none{padding:6px 11px; background:transparent; border-style:dashed; color:#909096; font-weight:600; font-style:italic; text-align:right}
+.ps-tile.clan{margin-bottom:12px; flex-direction:row; align-items:center; justify-content:space-between; gap:12px; background:#1d1d20; border:1px solid #2e2e33}
+.ps-tile.clan.podium{background:linear-gradient(100deg,rgba(230,193,88,.13),#1d1d20 62%); border-color:rgba(230,193,88,.28)}
+.ps-tile.clan .cl-l{display:flex; flex-direction:column; gap:3px; min-width:0}
+.ps-tile.clan .tv{flex:none; color:#c8c8cc; font-size:1.55em; line-height:1}
+.ps-tile.clan .tv small{margin-left:4px; color:#909096; font-size:.5em; font-weight:700}
+.ps-tile.clan.podium .tv{color:#e6c158}
+.ps-tile.clan.off .tv{color:#909096}
+/* ---------- Competitive Team: 3 columns (priority | team stats | reserve), compact cards ---------- */
+.tc-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) minmax(0,1fr); gap:14px}
+.tc-grid.fit .tc-card{width:494px; max-width:none}
+.tc-grid .tc-col,.tc-mid{gap:10px}
+.tc-mid{display:flex; flex-direction:column; min-width:0}
+.tm-body{display:flex; flex-direction:column; gap:20px}
+.tm-card{display:flex; flex-direction:column; gap:16px; padding:12px; background:#141416; border:1px solid #26262a; border-radius:12px}
+.tm-kpis{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px}
+.tm-k{display:flex; flex-direction:column; gap:2px; min-width:0; padding:8px 10px; background:#1d1d20; border-radius:10px}
+.tm-k .l{color:#909096; font-size:.7em; font-weight:700; letter-spacing:.05em; text-transform:uppercase}
+.tm-k .v{color:#fff; font-size:1.25em; font-weight:800; font-variant-numeric:tabular-nums}
+.tm-k .s{color:#909096; font-size:.8em; font-weight:500}
+.tm-h{margin:0 0 8px; color:#e6c158; font-size:.75em; font-weight:800; letter-spacing:.06em; text-transform:uppercase}
+.tm-row{display:grid; grid-template-columns:62px minmax(0,1fr) 46px; gap:8px; align-items:center; margin:6px 0; font-size:.9em; font-weight:700}
+.tm-row .n{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#c8c8cc}
+.tm-row .x{text-align:right; font-variant-numeric:tabular-nums}
+.tm-bar{height:8px; overflow:hidden; border-radius:4px; background:#26262a}
+.tm-bar i{display:block; height:100%; border-radius:4px; background:var(--c,#b57bff)}
+.tm-wr{display:flex; align-items:center; gap:12px}
+.tm-wr>div:last-child{flex:1; min-width:0}
+.tm-ring{flex:none; display:grid; place-items:center; width:78px; height:78px; border-radius:50%}
+.tm-ring span{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; width:60px; height:60px; border-radius:50%; background:#141416; font-weight:800; line-height:1.1; text-align:center}
+.tm-ring small{display:block; margin-top:1px; color:#909096; font-size:.65em; font-weight:700}
+.tm-stack{display:flex; gap:2px; height:12px; overflow:hidden; border-radius:6px}
+.tm-stack i{display:block; min-width:3px; background:var(--c)}
+.tm-leg{display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:8px; color:#c8c8cc; font-size:.8em; font-weight:600}
+.tm-leg b{color:#fff; font-weight:800}
+.tm-leg span:before{content:""; display:inline-block; width:8px; height:8px; margin-right:5px; border-radius:50%; background:var(--c)}
+.tm-pl{display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:6px 10px; align-items:center; font-size:.9em; font-weight:700}
+.tm-pl .hd{color:#909096; font-size:.75em; letter-spacing:.05em; text-transform:uppercase}
+.tm-pl .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.tm-pl .nm:before{content:""; display:inline-block; width:8px; height:8px; margin-right:6px; border-radius:50%; background:var(--c)}
+.tc-mid{padding-top:30px}
+.tm-title{display:flex; flex-direction:column; align-items:center; gap:2px; padding:0 0 4px; text-align:center}
+.tm-title b{color:#fff; font-size:1.2em; font-weight:800; letter-spacing:.01em}
+.tm-title small{color:#e6c158; font-size:.8em; font-weight:700; letter-spacing:.08em; text-transform:uppercase}
+.tm-card{padding:0; background:none; border:0; border-radius:0}
+.tm-body>div:not(.tm-kpis),.tm-k,.tc-mid .ps-tile.clan{background:#141416; border:1px solid #26262a; border-radius:12px}
+.tm-body>div:not(.tm-kpis){padding:12px}
+.tm-k.rk .v{font-size:1.05em; line-height:1.2; overflow-wrap:anywhere}
+.tm-body{gap:10px}
+@media (max-width:900px){.tc-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Leaderboard dropdown: rank banner ---------- */
+.rk-banner{--c:#3a3a40; --glow:transparent; --tint:#1d1d20; display:flex; align-items:center; gap:14px; margin:0 0 12px; padding:12px 16px; background:var(--tint); border:1px solid #26262a; border-radius:12px}
+.rk-banner .rk-ico{width:64px; height:64px}
+.rk-info{flex:1 1 auto; min-width:0}
+.rk-name{color:#fff; font-size:1.45em; font-weight:800; letter-spacing:-.015em; line-height:1.15; overflow-wrap:anywhere}
+.rk-sub{margin-top:3px; color:#909096; font-weight:600}
+.rk-side{flex:none; text-align:right}
+.rk-side b{display:block; color:#fff; font-size:1.5em; font-weight:800; line-height:1.05}
+.rk-side span{color:#909096; font-size:.85em; font-weight:700}
+.rk-banner.t1{--c:#e6c158; --glow:rgba(238,196,72,.6); --tint:#1d1709}
+.rk-banner.t2{--c:#cdd3dc; --glow:rgba(205,213,226,.5); --tint:#17191e}
+.rk-banner.t3{--c:#cd8346; --glow:rgba(205,127,56,.55); --tint:#1e140b}
+.rk-banner.t1,.rk-banner.t2,.rk-banner.t3{border-color:var(--c); background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.2) 50%,transparent 58%) 100% 0/300% 100% no-repeat,var(--tint); animation:rksheen 7s linear infinite,rkglow 3.2s ease-in-out infinite}
+.rk-banner.t1 .rk-side b{color:#e6c158}
+.rk-banner.t2 .rk-side b{color:#cdd3dc}
+.rk-banner.t3 .rk-side b{color:#cd8346}
+.rk-banner.t2,.rk-banner.t2 .rk-ico .rk-gloss{animation-delay:-2s,-.8s}
+.rk-banner.t3,.rk-banner.t3 .rk-ico .rk-gloss{animation-delay:-4s,-1.6s}
+.rk-banner.t2 .rk-ico .rk-gloss,.rk-banner.t3 .rk-ico .rk-gloss{animation-delay:-1s}
+@keyframes rksheen{from{background-position:100% 0,0 0}to{background-position:0% 0,0 0}}
+@keyframes rkglow{0%,100%{box-shadow:0 0 10px -4px var(--glow)}50%{box-shadow:0 0 22px -4px var(--glow)}}
+@media (max-width:480px){.rk-banner{gap:10px; padding:10px 12px}.rk-banner .rk-ico{width:52px; height:52px}.rk-name{font-size:1.2em}}
+@media (prefers-reduced-motion:reduce){.rk-banner.t1,.rk-banner.t2,.rk-banner.t3,.rk-ico.shine .rk-gloss{animation:none!important}}
+
+/* ---------- Compare: view tabs, charts, table ---------- */
+.cp-rank{display:inline-flex; align-items:center; justify-content:center; gap:7px; flex-wrap:wrap}
+.cp-rank .rk-ico{width:26px; height:26px}
+.cp-rank.t1{--glow:rgba(238,196,72,.6)}
+.cp-rank.t2{--glow:rgba(205,213,226,.5)}
+.cp-rank.t3{--glow:rgba(205,127,56,.55)}
+.cp-rank.none{color:#909096; font-style:italic; font-weight:600}
+.cx-tabs{display:flex; gap:8px; margin:0 0 12px}
+.cx-tabs button{flex:1 1 0; appearance:none; -webkit-appearance:none; margin:0; padding:11px 14px; border:1px solid transparent; border-radius:8px; background:#141416; color:#fff; font:inherit; font-weight:700; cursor:pointer; transition:background .2s ease,color .2s ease; -webkit-tap-highlight-color:transparent}
+.cx-tabs button:hover{background:#26262a}
+.cx-tabs button.on{background:#fff; color:#000; cursor:default}
+.cx-tabs button:focus-visible{outline:2px solid #fff; outline-offset:2px}
+.cx-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+.cx-card{min-width:0; padding:16px 18px 18px; background:#141416; border-radius:12px}
+.cx-card.wide{grid-column:1/-1}
+.cx-h{color:#e6c158; font-size:.85em; font-weight:800; letter-spacing:.06em; text-transform:uppercase}
+.cx-sub{margin-top:2px; color:#909096; font-weight:500; font-size:.9em}
+.cx-body{margin-top:12px}
+.cx-svg{display:block; width:100%; height:auto; overflow:visible}
+.cx-svg text{font-family:inherit; fill:#909096; font-weight:700; font-size:11px}
+.cx-svg .cx-tv{fill:#fff; font-size:11px; font-weight:800}
+.cx-svg .cx-ax{fill:#c8c8cc; font-size:11.5px}
+.cx-legend{display:flex; flex-wrap:wrap; justify-content:center; gap:6px 16px; margin-top:10px; color:#c8c8cc; font-weight:700; font-size:.92em}
+.cx-legend i{display:inline-block; width:10px; height:10px; margin-right:6px; border-radius:50%; vertical-align:-1px}
+.cx-duo{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+.cx-donut{display:flex; flex-direction:column; align-items:center; gap:6px; min-width:0}
+.cx-donut .cx-dsv{width:100%; max-width:170px}
+.cx-pn{max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:800}
+.cx-dbig{fill:#fff!important; font-size:19px!important; font-weight:800!important}
+.cx-dsm{font-size:8.5px!important}
+.cx-lg{display:flex; flex-direction:column; gap:3px; width:100%; margin-top:2px; font-variant-numeric:tabular-nums}
+.cx-lgr{display:flex; align-items:center; gap:6px; color:#909096; font-weight:600; font-size:.9em}
+.cx-lgr i{flex:none; width:9px; height:9px; border-radius:50%}
+.cx-lgr span{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cx-lgr b{color:#fff; font-weight:800}
+.cx-lgr em{min-width:34px; text-align:right; font-style:normal; color:#909096}
+.cx-seg{stroke-dasharray:var(--l) var(--g); animation:cxseg .9s cubic-bezier(.2,.7,.2,1) both}
+@keyframes cxseg{from{stroke-dasharray:0 var(--c)}}
+.cx-grow{transform-box:fill-box; transform-origin:50% 100%; animation:cxgrow .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes cxgrow{from{transform:scaleY(0)}}
+.cx-pop{animation:cxpop .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes cxpop{from{transform:scale(.15); opacity:0}}
+.cx-clan{display:flex; justify-content:space-between; align-items:flex-end; gap:12px}
+.cx-clan .n{font-size:2em; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
+.cx-clan .n small{margin-left:4px; font-size:.45em; color:#909096; font-weight:700}
+.cx-clan .n.a{color:var(--ca)}
+.cx-clan .n.b{color:var(--cb); text-align:right}
+.cx-clan .n em{display:block; margin-bottom:5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#c8c8cc; font-size:.4em; font-style:normal; font-weight:700}
+.cx-stk{margin-top:14px}
+.cx-stk .t{display:flex; justify-content:space-between; gap:10px; margin-bottom:5px; font-weight:700; font-variant-numeric:tabular-nums}
+.cx-stk .t span:last-child{color:#909096}
+.cx-bar3{display:flex; gap:3px; height:20px}
+.cx-bar3 i{display:grid; place-items:center; min-width:0; overflow:hidden; border-radius:5px; flex-basis:0; color:#000; font-size:.8em; font-style:normal; font-weight:800; transition:flex-grow .6s cubic-bezier(.2,.7,.2,1)}
+.cx-lad{position:relative; margin:48px 6px}
+.cx-lad .row{display:flex; gap:3px}
+.cx-lad .row i{flex:1 1 0; display:grid; place-items:center; min-width:0; height:24px; overflow:hidden; border-radius:5px; color:#000; font-size:.7em; font-style:normal; font-weight:800; white-space:nowrap; opacity:.9}
+.cx-pin{position:absolute; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; max-width:46%; white-space:nowrap; font-size:.85em; font-weight:800}
+.cx-pin b{max-width:100%; overflow:hidden; text-overflow:ellipsis; padding:2px 8px; border-radius:6px; background:var(--c); color:#000}
+.cx-pin i{width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent}
+.cx-pin.a{--c:var(--ca); bottom:calc(100% + 3px)}
+.cx-pin.a i{border-top:7px solid var(--c)}
+.cx-pin.b{--c:var(--cb); top:calc(100% + 3px); flex-direction:column-reverse}
+.cx-pin.b i{border-bottom:7px solid var(--c)}
+.cx-tbl{width:100%; min-width:520px; border-collapse:separate; border-spacing:0; font-variant-numeric:tabular-nums; font-weight:700}
+.cx-tbl th{padding:10px 12px; color:#909096; font-size:.85em; font-weight:800; text-align:center; white-space:nowrap}
+.cx-tbl th.a{color:var(--ca)}
+.cx-tbl th.b{color:var(--cb)}
+.cx-tbl td{padding:10px 12px; border-top:1px solid #26262a; text-align:center; white-space:nowrap}
+.cx-tbl td.l{text-align:left; color:#c8c8cc}
+.cx-tbl tr.sec td{padding:16px 12px 8px; border-top:0; border-bottom:1px solid #26262a; color:#e6c158; font-size:.85em; font-weight:800; letter-spacing:.06em; text-align:left; text-transform:uppercase}
+.cx-tbl td.w-a{background:rgba(230,193,88,.12); color:#fff}
+.cx-tbl td.w-b{background:rgba(90,169,255,.12); color:#fff}
+.cx-tbl td.lose{color:#909096}
+.cx-tbl td.d{color:#909096; font-size:.9em}
+.cx-tbl td.d.a{color:var(--ca)}
+.cx-tbl td.d.b{color:var(--cb)}
+@media (max-width:720px){
+  .cx-grid{grid-template-columns:minmax(0,1fr)}
+  .cx-card{padding:14px}
+  .cx-tabs button{padding:10px 6px; font-size:.92em}
+}
+@media (prefers-reduced-motion:reduce){.cx-seg,.cx-grow,.cx-pop{animation:none}.cx-bar3 i{transition:none}}
+</style>
+</head>
+<body>
+
+<main>
+  <header class="top">
+    <div class="brandwrap">
+      <h1 class="brand">FULLSENDSTATS.com</h1>
+      <div class="members-badge" id="clanMembers" hidden><div><b id="clanMembersNum">0</b> <span id="clanMembersLbl">members</span></div><div id="clanListedRow" hidden><b id="clanListedNum">0</b> listed</div><div id="clanRankedRow" hidden><b id="clanRankedNum">0</b> ranked</div></div>
+    </div>
+    <div class="tagline">FSC clan official leaderboard</div>
+    <div class="stamp">The ranking is updated every hour</div>
+  </header>
+  <div class="lbhead">
+    <div class="lbbar">
+      <nav class="lbnav" aria-label="Sections">
+        <button type="button" class="on" data-tab="lb" aria-current="page">★ㅤLeaderboard</button>
+        <button type="button" data-tab="team">☆ㅤCompetitive Team [FSE]</button>
+        <button type="button" data-tab="compare">↹ㅤCompare players</button>
+        <button type="button" data-tab="staff">✔︎ㅤStaff</button>
+        <button type="button" data-tab="history">✉ㅤCompetitive History</button>
+        <div class="lbsearch">
+          <input type="search" id="playerSearch" placeholder="Search player" aria-label="Search player" autocomplete="off" spellcheck="false">
+        </div>
+      </nav>
+    </div>
+  </div>
+  <div class="lb scroll" id="tab-lb">
+    <table class="lbt">
+      <colgroup><col style="width:7%"><col style="width:10%"><col style="width:26%"><col style="width:20%"><col style="width:13%"><col style="width:11%"><col style="width:13%"></colgroup>
+      <thead><tr><th>PLACE</th><th>RANK</th><th class="l">NAME</th><th>FFA / Teams / Ranked wins</th><th>W / L total</th><th>Winrate</th><th>Points</th></tr></thead>
+      <tbody>
+          <tr class="lb-status"><td class="lbs" colspan="7">Loading leaderboard…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="verified-note" id="verifiedNote">Verified users = users who have passed verification in our clan. If you want to get verified (get a profile picture, a checkmark and a link), please join our Discord server.</p>
+  <div class="tc" id="tab-team" hidden>
+    <div class="tc-head">
+      <div class="tc-title">☆ㅤCompetitive Team <span>[FSE]</span></div>
+      <div class="tc-sub">Team for competitions</div>
+      <div class="tc-desc">The official team uses the <b>FSC</b> clan tag as its primary tag. There is also an <b>[FSE]</b> team (Full Send Enjoyers), within which a main competitive team and a reserved team are designated for tournaments and scrims.</div>
+    </div>
+    <div class="tc-grid">
+      <div class="tc-col" id="tcMain"><h3 class="tc-group pri">Main competitive team <span id="tcMainN">0</span></h3></div>
+      <aside class="tc-mid" id="tcMid" aria-label="Main competitive team stats"><div class="tm-title"><b>Team stats</b><small>Main competitive team</small></div><div class="tm-card"><div class="tm-body">Loading…</div></div></aside>
+      <div class="tc-col" id="tcRes"><h3 class="tc-group">Reserved team <span id="tcResN">0</span></h3></div>
+      <p class="tc-empty" hidden>No players found</p>
+      <p class="tc-empty" id="tcErr" hidden></p>
+    </div>
+  </div>
+  <div class="tc cmp" id="tab-compare" hidden>
+    <div class="tc-head">
+      <div class="tc-title">↹ㅤCompare players</div>
+      <div class="tc-sub">Pick any two players from the leaderboard or the competitive team</div>
+    </div>
+    <div id="cpRoot"><div class="cp-panel"><div class="cp-empty">Loading…</div></div></div>
+  </div>
+  <div class="tc" id="tab-staff" hidden>
+    <div class="tc-head">
+      <div class="tc-title">✔︎ㅤStaff</div>
+      <div class="tc-sub">Admins of the FSC Discord server — message us if you need help, verification or have a question</div>
+    </div>
+    <div class="st-grid" id="stList"><div class="st-msg">Loading…</div></div>
+  </div>
+  <div class="tc" id="tab-history" hidden>
+    <div class="tc-head">
+      <div class="tc-title">✉ㅤCompetitive History</div>
+      <div class="tc-sub">Results and replays of our competitive matches</div>
+    </div>
+    
+    <div class="hx-bar">
+      <div class="hx-filters" role="group" aria-label="Filter events"><button type="button" class="on" data-f="all">All <small>5</small></button><button type="button" data-f="scrims">Scrims <small>1</small></button><button type="button" data-f="tournament">Tournaments <small>4</small></button></div>
+      <button type="button" class="hx-tog" id="hxToggle">Expand all</button>
+    </div>
+    <div class="hx-list" id="hxList">
+<details class="hx-ev" data-type="scrims"><summary><span class="hx-ico ">4th</span><span class="hx-ttl"><span class="hx-name">Scrims 24.10.2026</span><span class="hx-meta"><em class="hx-tag">Scrims</em><span class="hx-subt">6 games played</span></span></span><span class="hx-sum"><span class="hx-chip"><b>4th place</b></span></span><span class="hx-chev" aria-hidden="true"></span></summary><div class="hx-body"><div class="hx-lab">Players</div><ul class="hx-pl"><li>Moka</li><li>Malignant</li><li>Noobstar</li><li>Draco</li></ul><div class="hx-rec"><div class="hx-dots" aria-label="Game results in order"><i class="loss" title="Game 1: LOSS"></i><i class="loss" title="Game 2: LOSS"></i><i class="loss" title="Game 3: LOSS"></i><i class="win" title="Game 4: WIN"></i><i class="win" title="Game 5: WIN"></i><i class="loss" title="Game 6: LOSS"></i></div></div><div class="hx-scroll"><table class="hx-tbl"><thead><tr><th>#</th><th>Match</th><th>Players</th><th>Map</th><th>Result</th><th>Replay</th></tr></thead><tbody><tr><td class="n">1</td><td class="m"><span class="hx-mt"><b>[FSC]</b><i>vs</i><b>[AST]</b></span></td><td>3 vs 3</td><td>MONTREAL</td><td><span class="hx-res loss">LOSS</span> <span class="hx-at">at 4:05</span></td><td><a class="hx-rp" href="https://replay.ofstats.io/game/dfQfmJB3rg" target="_blank" rel="noopener">▶ Replay</a></td></tr><tr><td class="n">2</td><td class="m"><span class="hx-mt"><b>[FSC]</b><i>vs</i><b>[AST]</b></span></td><td>4 vs 4</td><td>MONTREAL</td><td><span class="hx-res loss">LOSS</span> <span class="hx-at">at 3:52</span></td><td><a class="hx-rp" href="https://replay.ofstats.io/game/dk3LVZUFeW" target="_blank" rel="noopener">▶ Replay</a></td></tr><tr><td class="n">3</td><td class="m"><span class="hx-mt"><b>[FSC]</b><i>vs</i><b>[CYN]</b></span></td><td>4 vs 3</td><td>ICELAND</td><td><span class="hx-res loss">LOSS</span> <span class="hx-at">at 5:08</span></td><td><a class="hx-rp" href="https://replay.ofstats.io/game/dLNxuEwm9D" target="_blank" rel="noopener">▶ Replay</a></td></tr><tr><td class="n">4</td><td class="m"><span class="hx-mt"><b>[FSC]</b><i>vs</i><b>[ROYS]</b></span></td><td>4 vs 3</td><td>AUSTRALIA</td><td><span class="hx-res win">WIN</span> <span class="hx-at">at 7:06</span></td><td><a class="hx-rp" href="https://replay.ofstats.io/game/dbRaU5wKQ5" target="_blank" rel="noopener">▶ Replay</a></td></tr><tr><td class="n">5</td><td class="m"><span class="hx-mt"><b>[FSC]</b><i>vs</i><b>[DUCK]</b></span></td><td>4 vs 4</td><td>MARS</td><td><span class="hx-res win">WIN</span> <span class="hx-at">at 5:46</span></td><td><a class="hx-rp" href="https://replay.ofstats.io/game/dACYAMtixy" target="_blank" rel="noopener">▶ Replay</a></td></tr><tr><td class="n">6</td><td class="m"><span class="hx-mt"><b>[FSC]</b><i>vs</i><b>[LUX]</b></span></td><td>4 vs 4</td><td>TOURNEY 2 TEAMS</td><td><span class="hx-res loss">LOSS</span> <span class="hx-at">at 4:05</span></td><td><a class="hx-rp" href="https://replay.ofstats.io/game/dSybDBuPCv" target="_blank" rel="noopener">▶ Replay</a></td></tr></tbody></table></div><div class="hx-lab">Standings</div><div class="hx-scroll"><table class="hx-tbl hx-rank"><thead><tr><th>Rank</th><th>Participant</th><th>Match W-L-T</th><th>TB</th><th>Set W/L Diff</th><th>Pts</th></tr></thead><tbody><tr><td class="n">1</td><td>AST</td><td>4 - 0 - 1</td><td>0</td><td>4</td><td>16</td></tr><tr><td class="n">2</td><td>LUX</td><td>4 - 1 - 0</td><td>0</td><td>3</td><td>16</td></tr><tr><td class="n">3</td><td>CYN</td><td>2 - 1 - 2</td><td>0</td><td>1</td><td>8</td></tr><tr class="me"><td class="n">4</td><td>FSC</td><td>2 - 3 - 0</td><td>0</td><td>-1</td><td>8</td></tr><tr><td class="n">5</td><td>DUCK</td><td>1 - 4 - 0</td><td>0</td><td>-3</td><td>4</td></tr><tr><td class="n">6</td><td>ROYS</td><td>0 - 4 - 1</td><td>0</td><td>-4</td><td>0</td></tr></tbody></table></div><div class="hx-wrcard"><div class="hx-ring" style="--p:40" role="img" aria-label="Team winrate 40%"><b>40%</b></div><div class="hx-wrtxt"><span class="hx-wrlbl">Team winrate</span><strong>2 wins · 3 losses</strong><div class="hx-wrleg"><span><i class="w"></i>Wins</span><span><i class="l"></i>Losses</span></div></div></div><div class="hx-foot hx-foot-end"><span class="hx-note">Total results: 2W – 3L, because the first game (MONTREAL) was played twice.</span><a class="hx-btn" href="https://challonge.com/ru/h7d9yrdn/standings.html" target="_blank" rel="noopener">SCRIMS results</a></div></div></details>
+<details class="hx-ev" data-type="tournament"><summary><span class="hx-ico none">✕</span><span class="hx-ttl"><span class="hx-name">OFM World Cup 2026</span><span class="hx-meta"><em class="hx-tag">Trios</em><em class="hx-tag">Tournament</em><span class="hx-subt">Both teams stopped in the Quarters</span></span></span><span class="hx-sum"><span class="hx-chip"><b>No place</b></span></span><span class="hx-chev" aria-hidden="true"></span></summary><div class="hx-body"><div class="hx-teams"><div class="hx-team"><div class="hx-tname">[FSE] Full Send Enjoyers (GER)</div><div class="hx-steps"><div class="hx-step ok"><span class="dot">✓</span><b>Group Stage</b><small>Qualified</small></div><div class="hx-step fail"><span class="dot">✕</span><b>Quarters</b><small>Knockout</small></div><div class="hx-step na"><span class="dot">–</span><b>Grand Final</b><small>Did not qualify</small></div></div><div class="hx-lab">Players</div><ul class="hx-pl"><li>Grush</li><li>Baumi</li><li>Draco</li></ul></div><div class="hx-team"><div class="hx-tname">[FSC] Full Send Clan (NLD)</div><div class="hx-steps"><div class="hx-step ok"><span class="dot">✓</span><b>Group Stage</b><small>Qualified</small></div><div class="hx-step fail"><span class="dot">✕</span><b>Quarters</b><small>Knockout · 1 player missing in action</small></div><div class="hx-step na"><span class="dot">–</span><b>Grand Final</b><small>Did not qualify</small></div></div><div class="hx-lab">Players</div><ul class="hx-pl"><li>Moka/Mori Mori</li><li>Pregnar</li><li>Heyrey</li></ul></div></div><div class="hx-sub hx-sub-static"><div class="hx-sub-h">Group seeding table</div><div class="hx-scroll"><table class="hx-seed"><thead><tr><th></th><th>Top 1s</th><th>Points</th><th>Top 2s</th><th>Points</th><th>Top 3s</th><th>Points</th><th>Top 4s</th><th>Points</th></tr></thead><tbody><tr><td class="rk">1st</td><td class="q">FRA</td><td class="q">20</td><td class="q">USA</td><td class="q">14</td><td class="q me">NLD</td><td class="q me">11</td><td class="e">PRT</td><td class="e">3</td></tr><tr><td class="rk">2nd</td><td class="q">CHE</td><td class="q">18</td><td class="q">NOR</td><td class="q">14</td><td class="q">POL</td><td class="q">10</td><td class="e">DNK</td><td class="e">1</td></tr><tr><td class="rk">3rd</td><td class="q">JPN</td><td class="q">16</td><td class="q">URU</td><td class="q">12</td><td class="q">BRA</td><td class="q">8</td><td class="e">AUS</td><td class="e">0</td></tr><tr><td class="rk">4th</td><td class="q">ITA</td><td class="q">16</td><td class="q">TUR</td><td class="q">11</td><td class="q me">GER</td><td class="q me">8</td><td class="e">SWE</td><td class="e">0</td></tr><tr><td class="rk">5th</td><td class="q">ARG</td><td class="q">14</td><td class="q">KOR</td><td class="q">10</td><td class="e">MEX</td><td class="e">8</td><td class="e">ESP</td><td class="e">0</td></tr><tr><td class="rk">6th</td><td class="q">BEL</td><td class="q">14</td><td class="q">CAN</td><td class="q">7</td><td class="e">CRO</td><td class="e">6</td><td class="e">GBR</td><td class="e">0</td></tr></tbody></table></div><div class="hx-legend"><span><i class="q"></i>Qualified</span><span><i class="e"></i>Eliminated</span></div></div></div></details>
+<details class="hx-ev" data-type="tournament"><summary><span class="hx-ico gold">1st</span><span class="hx-ttl"><span class="hx-name">UN Olympics</span><span class="hx-meta"><em class="hx-tag">FFA</em><em class="hx-tag">Tournament</em><span class="hx-subt">Orthros · 1st of 10 in the final ranking</span></span></span><span class="hx-sum"><span class="hx-chip gold"><b>1st place ★</b></span></span><span class="hx-chev" aria-hidden="true"></span></summary><div class="hx-body"><div class="hx-lab">Players</div><ul class="hx-pl"><li>Orthros</li></ul><div class="hx-lab">FFAs · Final ranking</div><ol class="hx-st" style="--rows:5"><li class="me"><i>1</i><span>Orthros</span></li><li><i>2</i><span>Pyrrha</span></li><li><i>3</i><span>Ultimus Rex</span></li><li><i>4</i><span>Royaume</span></li><li><i>5</i><span>Staydrip</span></li><li><i>6</i><span>Biffeur</span></li><li><i>7</i><span>Planetary</span></li><li><i>8</i><span>Zorbix</span></li><li><i>9</i><span>Falsity</span></li><li><i>10</i><span>Paragon</span></li></ol></div></details>
+<details class="hx-ev" data-type="tournament"><summary><span class="hx-ico ">7th</span><span class="hx-ttl"><span class="hx-name">UN Olympics</span><span class="hx-meta"><em class="hx-tag">Trios</em><em class="hx-tag">Tournament</em><span class="hx-subt">7th of 11 teams · 33 pts</span></span></span><span class="hx-sum"><span class="hx-chip"><b>7th place</b></span></span><span class="hx-chev" aria-hidden="true"></span></summary><div class="hx-body"><div class="hx-lab">Players</div><ul class="hx-pl"><li>Baumi</li><li>Heyrey</li><li>Random (lostchampion)</li><li>Orthros</li><li>Pregnar</li><li>Mori Mori</li></ul><div class="hx-lab">Standings</div><ol class="hx-st" style="--rows:6"><li style="--w:100.0%"><i>1</i><span>ATR</span><b>41</b></li><li style="--w:90.2%"><i>2</i><span>BGS</span><b>37</b></li><li style="--w:90.2%"><i>3</i><span>C7N</span><b>37</b></li><li style="--w:87.8%"><i>4</i><span>CYN</span><b>36</b></li><li style="--w:85.4%"><i>5</i><span>UN</span><b>35</b></li><li style="--w:85.4%"><i>6</i><span>LBU</span><b>35</b></li><li class="me" style="--w:80.5%"><i>7</i><span>FSC</span><b>33</b></li><li style="--w:56.1%"><i>8</i><span>ITA</span><b>23</b></li><li style="--w:51.2%"><i>9</i><span>LBUJR</span><b>21</b></li><li style="--w:43.9%"><i>10</i><span>EU2</span><b>18</b></li><li style="--w:39.0%"><i>11</i><span>HATE</span><b>16</b></li></ol></div></details>
+<details class="hx-ev" data-type="tournament"><summary><span class="hx-ico ">6th</span><span class="hx-ttl"><span class="hx-name">OFM Spring Minor 2026</span><span class="hx-meta"><em class="hx-tag">Trios</em><em class="hx-tag">Tournament</em><span class="hx-subt">6th of 11 teams · 51 pts</span></span></span><span class="hx-sum"><span class="hx-chip"><b>6th place</b></span></span><span class="hx-chev" aria-hidden="true"></span></summary><div class="hx-body"><div class="hx-lab">Players</div><ul class="hx-pl"><li>Baumi</li><li>Heyrey</li><li>Random (lostchampion)</li><li>Honda (Moka)</li></ul><div class="hx-lab">Standings</div><ol class="hx-st" style="--rows:6"><li style="--w:100.0%"><i>1</i><span>BGS</span><b>102</b></li><li style="--w:89.2%"><i>2</i><span>ATR</span><b>91</b></li><li style="--w:72.5%"><i>3</i><span>INC</span><b>74</b></li><li style="--w:71.6%"><i>4</i><span>SCR</span><b>73</b></li><li style="--w:63.7%"><i>5</i><span>BUL</span><b>65</b></li><li class="me" style="--w:50.0%"><i>6</i><span>FSC</span><b>51</b></li><li style="--w:48.0%"><i>7</i><span>NUB</span><b>49</b></li><li style="--w:46.1%"><i>8</i><span>CYN</span><b>47</b></li><li style="--w:7.8%"><i>9</i><span>NSFW</span><b>8</b></li><li style="--w:7.8%"><i>10</i><span>MARS</span><b>8</b></li><li style="--w:2.0%"><i>11</i><span>KYO</span><b>2</b></li></ol></div></details>
+    </div>
+  </div>
+  <section class="stack">
+    <details class="fold">
+      <summary><h2>How points work</h2></summary>
+      <div class="fold-body">
+        <p class="formula"><span>POINTS</span><span>=</span><span>(FFA WINS</span><span>×</span><span>2.0</span><span>+</span><span>TEAM WINS</span><span>×</span><span>1.0</span><span>+</span><span>RANKED WINS</span><span>×</span><span>1.5)</span><span>×</span><span>× WINRATE</span><span>÷</span><span>10</span></p>
+        <div class="duo-grid">
+          <ul class="rules">
+        <li>Points are awarded only for: rated <b>FFA</b> games, rated <b>TEAM</b> games, rated <b>RANKED</b> games, strictly within our clan.</li>
+        <li>HVN (Humans vs Nations), solo games, custom lobbies and tournaments are <b>not</b> included.</li>
+        <li>Only games played with the <b>[FSC] tag</b> count. Wear it, win, and promote the clan.</li>
+      </ul>
+          <div>
+            <div class="scroll">
+        <table class="tbl extbl">
+          <colgroup><col><col style="width:1%"><col style="width:1%"><col style="width:1%"></colgroup>
+          <thead>
+            <tr><th>Player</th><th class="n">Win coefficient</th><th class="n">Win rate</th><th class="n">Points</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A — plays a lot, average skill</td><td class="n">100</td><td class="n">50%</td><td class="n pts">50</td></tr>
+            <tr class="best"><td>B — plays little, high skill</td><td class="n">80</td><td class="n">80%</td><td class="n pts">64</td></tr>
+            <tr><td>C — plays around the clock, low skill</td><td class="n">120</td><td class="n">25%</td><td class="n pts">30</td></tr>
+          </tbody>
+        </table>
+      </div>
+          </div>
+        </div>
+        <div class="note-wrap"><p class="note">*Different game modes have different coefficients. This is intended to encourage players to participate in FFA (Free-For-All) and boost our clan’s standing on the global leaderboard. The overall contribution to the clan is very important.</p></div>
+      </div>
+    </details>
+  </section>
+
+  <section class="stack">
+    <details class="fold">
+      <summary><h2>Why a percentile-based system</h2></summary>
+      <div class="fold-body">
+        <ul class="adv">
+      <li><b>Scalability</b>The system works just as well for a clan of 30 members as for one with 500, without restricting anyone’s playstyle.</li>
+      <li><b>Healthy competition</b>The top role becomes an exclusive “elite club”, for example the top 2% of all members. In a clan of 500 that means the 10 strongest players, not just one, so reaching the top tier is a realistic and enticing goal.</li>
+      <li><b>A dynamic benchmark</b>To stay in the top percentage, players must stay active and keep performing; otherwise newcomers can push them out.</li>
+    </ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="stack">
+    <details class="fold">
+      <summary><h2>How to get a checkmark</h2></summary>
+      <div class="fold-body">
+        <p class="listed">You just need to reach out to the FSC administration - specifically @Malignant_NacissisT in our discord server - and let me know that you’d like to confirm your participation and you’ll receive a checkmark. l will also link your Discord avatar and OFStats.io profile.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="stack">
+    <details class="fold">
+      <summary><h2>Who is listed</h2></summary>
+      <div class="fold-body">
+        <p class="listed">Listed = minimum of 20 wins with clan tag [FSC] <b>in total </b> (FFA/teams/ranked).</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="stack">
+    <details class="fold">
+      <summary><h2>Who is rated</h2></summary>
+      <div class="fold-body">
+        <p class="listed">Rated = at least top 80% of all this <b>leaderboard.</b></p>
+      </div>
+    </details>
+  </section>
+
+  <section class="stack">
+    <details class="fold">
+      <summary><h2>Ranks</h2></summary>
+      <div class="fold-body">
+        <div class="scroll">
+      <table class="tbl ranktbl">
+        <colgroup><col style="width:16%"><col style="width:44%"><col style="width:40%"></colgroup>
+        <thead><tr><th></th><th>Rank</th><th>Percentage</th></tr></thead>
+        <tbody>
+          <tr><td class="sym">☘︎</td><td>MITOCHONDRIA</td><td class="pct">all other members</td></tr>
+          <tr><td class="sym">│✧✧✧│¹</td><td>HALF SENDER</td><td class="pct">top 80%</td></tr>
+          <tr><td class="sym">│✧✧✧│²</td><td>SENDER</td><td class="pct">top 70%</td></tr>
+          <tr><td class="sym">│✧✧✧│³</td><td>MINI FULLSENDER</td><td class="pct">top 60%</td></tr>
+          <tr><td class="sym">│︽︽︽│¹</td><td>FULLSENDER</td><td class="pct">top 50%</td></tr>
+          <tr><td class="sym">│︽︽︽│²</td><td>TRUE FULLSENDER</td><td class="pct">top 40%</td></tr>
+          <tr><td class="sym">│︽︽︽│³</td><td>ELITE FULLSENDER</td><td class="pct">top 30%</td></tr>
+          <tr><td class="sym">░│=★=│░</td><td>FULLSEND TRAINER</td><td class="pct">top 20%</td></tr>
+          <tr><td class="sym">░│★★│░</td><td>MASTER OF FULLSENDING</td><td class="pct">top 15%</td></tr>
+          <tr><td class="sym">░│★★★│░</td><td>GRANDFULLSENDER</td><td class="pct">top 10%</td></tr>
+          <tr class="gap"><td colspan="3"></td></tr>
+          <tr class="god"><td class="sym">❰《〔𖠦〕》❱</td><td>GOD OF FULLSENDING</td><td class="pct">top 5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+        <div class="note-wrap rank-note"><p class="note">Mitochondria are not rated, as this is not a ranked role.</p></div>
+      </div>
+    </details>
+  </section>
+
+  <nav class="links" aria-label="Community links">
+    <a href="https://discord.gg/XwA2a5B2tX" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg><span>FSC Discord Server</span></a>
+    <a href="discord://-/users/1064604365765222471"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15v-3a9 9 0 0 1 18 0v3"/><path d="M21 16a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3zM3 16a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H3z"/><path d="M20 18v.5a3 3 0 0 1-3 3h-3"/></svg><span>Support</span></a>
+  </nav>
+  <div class="disclaimer">
+    <p>Fan-made, unofficial site. Not affiliated with OpenFront Inc. Not for commercial use.</p>
+    <p>Statistics powered by OFStats.io and official OpenFront API. Clan Contribution (points) and ranks are our own metrics.</p>
+    <p>Created only for FSC (Full Send Clan) · Created by Malignant_NarcissisT, 2026</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  /* Staff tab: admins are read from staff.json (same folder as this page), list "staff":
+     discord_id / name / avatar / roles (optional, default "Admin"). Each card gets a button that opens the admin's Discord profile. */
+  var root=document.getElementById('stList'); if(!root) return;
+  var URL_='staff.json', ICON='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>';
+  function msg(t){ root.textContent=''; var d=document.createElement('div'); d.className='st-msg'; d.textContent=t; root.appendChild(d); }
+  fetch(URL_+'?t='+Date.now(),{cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){
+      var list=(d&&d.staff||[]).filter(function(p){ return p&&p.name; });
+      if(!list.length) throw new Error('no "staff" list in the file');
+      root.textContent='';
+      list.forEach(function(p){
+        var c=document.createElement('div'); c.className='st-card';
+        var slugs=(Array.isArray(p.roles)&&p.roles.length?p.roles:['Admin']).map(function(r){ return String(r).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); });
+        if(slugs.indexOf('site-developer')>-1) c.classList.add('tone-dev');
+        else if(slugs.indexOf('clan-leader')>-1||slugs.indexOf('leader')>-1) c.classList.add('tone-leader');
+        var av=document.createElement('div'); av.className='st-av';
+        if(p.avatar){ var im=document.createElement('img'); im.src=p.avatar; im.alt=''; im.width=72; im.height=72; im.loading='lazy'; im.referrerPolicy='no-referrer'; im.onerror=function(){ im.remove(); }; av.appendChild(im); }
+        var info=document.createElement('div'); info.className='st-info';
+        var nm=document.createElement('div'); nm.className='st-name'; nm.textContent=p.name;
+        var roles=document.createElement('div'); roles.className='st-roles';
+        (Array.isArray(p.roles)&&p.roles.length?p.roles:['Admin']).forEach(function(r){
+          var b=document.createElement('span'); b.className='st-role '+String(r).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); b.textContent=r; roles.appendChild(b);
+        });
+        info.appendChild(nm); info.appendChild(roles);
+        if(/^\d+$/.test(String(p.discord_id||''))){
+          var a=document.createElement('a'); a.className='st-btn'; a.target='_blank'; a.rel='noopener';
+          a.href='https://discord.com/users/'+p.discord_id; a.setAttribute('aria-label','Contact '+p.name+' on Discord');
+          a.innerHTML=ICON; a.appendChild(document.createTextNode('Contact on Discord'));
+          info.appendChild(a);
+        }
+        c.appendChild(av); c.appendChild(info); root.appendChild(c);
+      });
+    })
+    .catch(function(e){ console.error('staff.json: '+e.message); msg('Staff list could not be loaded.'); });
+})();
+</script>
+<script>
+(function(){
+  /* Competitive History: filter + expand/collapse. Open/close uses the same height animation as the FAQ blocks. */
+  var list=document.getElementById('hxList'); if(!list) return;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var evs=Array.prototype.slice.call(list.querySelectorAll('.hx-ev'));
+  var fb=document.querySelectorAll('.hx-filters button'), tog=document.getElementById('hxToggle');
+
+  function heightIf(el,open){            /* natural height of the block when open / closed */
+    var prev=el.open; el.style.height='auto'; el.open=open;
+    var h=el.offsetHeight; el.open=prev; return h;
+  }
+  function setOpen(el,open){
+    if(el.classList.contains('is-open')===open) return;
+    el.classList.toggle('is-open',open);
+    if(reduce){ el.open=open; return; }
+    var from=el.offsetHeight;
+    if(el._a){ el._a.cancel(); el._a=null; }
+    el.style.height='';
+    var to=heightIf(el,open);
+    el.style.height=''; el.style.overflow='hidden';
+    if(open) el.open=true;
+    var a=el._a=el.animate({height:[from+'px',to+'px']},{duration:380,easing:'cubic-bezier(.4,0,.2,1)'});
+    a.onfinish=function(){ el._a=null; el.open=open; el.style.height=el.style.overflow=''; };
+  }
+  function bind(el){
+    var sum=el.querySelector(':scope>summary');
+    sum.addEventListener('click',function(e){ e.preventDefault(); setOpen(el,!el.classList.contains('is-open')); label(); });
+  }
+  evs.forEach(bind);
+  Array.prototype.forEach.call(list.querySelectorAll('details.hx-sub'),bind);
+
+  function visible(){ return evs.filter(function(e){ return !e.hidden; }); }
+  function label(){ var v=visible(); tog.textContent=(v.length&&v.every(function(e){return e.classList.contains('is-open');}))?'Collapse all':'Expand all'; }
+  fb.forEach(function(b){ b.addEventListener('click',function(){
+    fb.forEach(function(x){ x.classList.toggle('on',x===b); });
+    evs.forEach(function(e){ e.hidden=(b.dataset.f!=='all'&&e.dataset.type!==b.dataset.f); });
+    label();
+  }); });
+  tog.addEventListener('click',function(){
+    var v=visible(), open=!v.every(function(e){return e.classList.contains('is-open');});
+    v.forEach(function(e){ setOpen(e,open); }); label();
+  });
+})();
+</script>
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('details.fold').forEach(function(el){
+    var sum=el.querySelector('summary'), body=el.querySelector('.fold-body'), anim=null;
+    function done(open){ el.open=open; anim=null; el.style.height=el.style.overflow=''; }
+    function run(from,to,open){
+      if(anim) anim.cancel();
+      anim=el.animate({height:[from+'px',to+'px']},{duration:380,easing:'cubic-bezier(.4,0,.2,1)'});
+      anim.onfinish=function(){done(open)};
+    }
+    sum.addEventListener('click',function(e){
+      e.preventDefault();
+      var willOpen=!el.classList.contains('is-open');
+      el.classList.toggle('is-open',willOpen);
+      if(reduce){ el.open=willOpen; return; }
+      el.style.overflow='hidden';
+      if(willOpen){
+        var from=el.offsetHeight;
+        el.style.height=from+'px';
+        el.open=true;
+        requestAnimationFrame(function(){ run(from, sum.offsetHeight+body.offsetHeight, true); });
+      }else{
+        run(el.offsetHeight, sum.offsetHeight, false);
+      }
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  /* tabs */
+  var btns=document.querySelectorAll('.lbnav button[data-tab]');
+  var panels={lb:document.getElementById('tab-lb'),team:document.getElementById('tab-team'),compare:document.getElementById('tab-compare'),history:document.getElementById('tab-history'),staff:document.getElementById('tab-staff')};
+  var searchBox=document.querySelector('.lbsearch');
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      btns.forEach(function(x){
+        var on=x===b;
+        x.classList.toggle('on',on);
+        if(on) x.setAttribute('aria-current','page'); else x.removeAttribute('aria-current');
+      });
+      Object.keys(panels).forEach(function(k){ panels[k].hidden=(k!==b.dataset.tab); });
+      var vn=document.getElementById('verifiedNote'); if(vn) vn.hidden=(b.dataset.tab!=='lb');   /* verified note belongs to the leaderboard tab */
+      if(searchBox) searchBox.style.display=(b.dataset.tab==='lb')?'':'none';   /* search only filters the leaderboard */
+    });
+  });
+
+  /* live player search (leaderboard + team) */
+  var input=document.getElementById('playerSearch');
+  var tbody=document.querySelector('.lbt tbody');
+  var rows=Array.prototype.slice.call(tbody.querySelectorAll('tr:not(.lb-status)'));
+  var empty=document.createElement('tr');
+  empty.style.display='none';
+  empty.innerHTML='<td class="empty" colspan="7">No players found</td>';
+  tbody.appendChild(empty);
+  var tcEmpty=document.querySelector('.tc-empty');
+  var groups=Array.prototype.slice.call(document.querySelectorAll('.tc-group'));
+  function match(el,sel,q){ var n=el.querySelector(sel); return !q||((n?n.textContent:'')+' '+(el.getAttribute('data-alt')||'')).toLowerCase().indexOf(q)!==-1; }
+  function filter(){
+    var q=input.value.trim().toLowerCase(), a=0, b=0;
+    rows.forEach(function(r){
+      var ok=match(r,'.nm',q); r.style.display=ok?'':'none'; if(ok) a++;
+      var dt=r.nextElementSibling; if(dt&&dt.classList.contains('lb-detail')) dt.classList.toggle('filtered',!ok);   /* open dropdown follows its row */
+    });
+    empty.style.display=(a||tbody.querySelector('.lb-status'))?'none':'';
+    var cards=Array.prototype.slice.call(document.querySelectorAll('.tc-card'));
+    cards.forEach(function(c){ var ok=true; c.style.display=''; b++;   /* team cards are not filtered (no search on that tab) */ });
+    tcEmpty.hidden=!!b||!cards.length;
+    groups.forEach(function(g){
+      var n=g.nextElementSibling, any=false;
+      while(n && !n.classList.contains('tc-group') && !n.classList.contains('tc-empty')){ if(n.style.display!=='none') any=true; n=n.nextElementSibling; }
+      g.style.display=any?'':'none';
+    });
+  }
+  input.addEventListener('input',filter);
+  window.FSC_TEAM.then(function(){ filter(); });
+  window.lbRefresh=function(){ rows=Array.prototype.slice.call(tbody.querySelectorAll('tr')).filter(function(r){ return r!==empty&&!r.classList.contains('lb-detail'); }); filter(); };
+})();
+</script>
+<script>
+/* One fetch of fsc_stats.json for the whole page (leaderboard, team cards, dropdowns, compare).
+   Query string + no-store: always the fresh file, never a cached copy. */
+window.FSC_JSON_URL='fsc_stats.json';
+
+/* Verified players come from discord_players.json (same folder), list "verified":
+   discord_id / openfront_id / name / avatar. Everything that marks a player as verified is drawn from it:
+   the check mark, the ofstats.io profile link (https://ofstats.io/player/<openfront_id>) and the avatar.
+   FSC_VER.byId = openfront id -> entry, FSC_VER.byName = name (lower case, letters and digits only) -> entry.
+   If the file cannot be loaded the page still works, just without check marks, links and avatars. */
+window.FSC_PLAYERS_URL='discord_players.json';
+window.FSC_VER={byId:{},byName:{}};
+window.FSC_PLAYERS=fetch(window.FSC_PLAYERS_URL+'?t='+Date.now(),{cache:'no-store'})
+  .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+  .then(function(d){
+    (d&&d.verified||[]).forEach(function(p){
+      if(!p||!p.openfront_id) return;
+      var e={id:String(p.openfront_id),name:p.name||'',avatar:p.avatar||null};
+      window.FSC_VER.byId[e.id]=e;
+      if(e.name) window.FSC_VER.byName[e.name.toLowerCase().replace(/[^a-z0-9]/g,'')]=e;
+    });
+  })
+  .catch(function(err){ console.error(window.FSC_PLAYERS_URL+': '+err.message+' (no check marks, links or avatars will be shown)'); });
+
+/* Competitive Team: read ONLY from competitive_team.json (same folder), list "team":
+   openfront_id / name / discord_id / avatar (optional) / roles.
+   Roles: "Main Competitive Team" or "Reserved Team" (the column) and optionally "Team Lead".
+   There are no cards in the HTML: if the file cannot be loaded, an error message is shown. */
+window.FSC_TEAM_URL='competitive_team.json';
+window.FSC_TEAM=fetch(window.FSC_TEAM_URL+'?t='+Date.now(),{cache:'no-store'})
+  .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+  .then(function(d){
+    var list=(d&&d.team||[]).filter(function(p){ return p&&p.openfront_id&&p.name; });
+    if(!list.length) throw new Error('no "team" list in the file');
+    var cols={main:document.getElementById('tcMain'), res:document.getElementById('tcRes')}, n={main:0,res:0};
+    list.forEach(function(p){
+      var roles=(Array.isArray(p.roles)?p.roles:[]).map(function(r){ return String(r).toLowerCase(); });
+      var isRes=roles.some(function(r){ return r.indexOf('reserve')>-1; }), isMain=roles.some(function(r){ return r.indexOf('main')>-1; });
+      var lead=roles.some(function(r){ return r.indexOf('lead')>-1; });
+      var k=isRes?'res':(isMain?'main':null); if(!k||!cols[k]) return;
+      var card=document.createElement('article'); card.className='tc-card'+(lead?' lead':''); card.setAttribute('data-pid',String(p.openfront_id));
+      if(lead){ var lb=document.createElement('span'); lb.className='tc-lead'; lb.textContent='TEAM LEAD'; card.appendChild(lb); }
+      var av=document.createElement('span'); av.className='tc-av';
+      if(p.avatar){ var im=document.createElement('img'); im.src=p.avatar; im.alt=''; im.width=88; im.height=88; im.loading='lazy'; im.referrerPolicy='no-referrer'; im.onerror=function(){ im.remove(); }; av.appendChild(im); }
+      var nm=document.createElement('div'); nm.className='tc-name'; var sp=document.createElement('span'); sp.className='tc-nm'; sp.textContent=p.name; nm.appendChild(sp);
+      var st=document.createElement('div'); st.className='tc-stats'; st.textContent='Loading stats…';
+      card.appendChild(av); card.appendChild(nm); card.appendChild(st); cols[k].appendChild(card); n[k]++;
+    });
+    function set(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+    set('tcMainN',n.main); set('tcResN',n.res); set('tcCount',n.main+n.res);
+    return list;
+  })
+  .catch(function(err){
+    console.error(window.FSC_TEAM_URL+': '+err.message);
+    var e=document.getElementById('tcErr'); if(e){ e.textContent='Competitive team could not be loaded.'; e.hidden=false; }
+    var m=document.getElementById('tcMid'); if(m) m.hidden=true;
+    return [];
+  });
+
+/* One fetch of fsc_stats.json for the whole page; resolves only after discord_players.json has been read,
+   so every consumer below already sees the verified list. */
+window.FSC_DATA=Promise.all([
+  fetch(window.FSC_JSON_URL+'?t='+Date.now(),{cache:'no-store'})
+    .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); }),
+  window.FSC_PLAYERS,
+  window.FSC_TEAM
+]).then(function(r){ return r[0]; });
+
+/* Helpers shared by the scripts below */
+window.FSC_UTIL={
+  link:function(text,id){
+    var a=document.createElement('a');
+    a.href='https://ofstats.io/player/'+encodeURIComponent(id); a.target='_blank'; a.rel='noopener'; a.textContent=text;
+    return a;
+  },
+  check:function(){
+    var c=document.createElement('span'); c.className='chk'; c.title='Verified'; c.textContent='✓';
+    return c;
+  },
+  img:function(src,size){
+    var im=document.createElement('img');
+    im.src=src; im.alt=''; im.width=size; im.height=size; im.loading='lazy'; im.referrerPolicy='no-referrer';
+    return im;
+  }
+};
+
+/* The team cards are built from competitive_team.json.
+   Once discord_players.json is loaded, verified players get their avatar, ofstats link and check mark. */
+Promise.all([window.FSC_PLAYERS,window.FSC_TEAM]).then(function(){
+  var V=window.FSC_VER, U=window.FSC_UTIL;
+  function key(t){ return String(t==null?'':t).toLowerCase().replace(/[^a-z0-9]/g,''); }
+  Array.prototype.forEach.call(document.querySelectorAll('.lbt tbody tr'),function(tr){
+    var who=tr.querySelector('.who'), nm=tr.querySelector('.who .nm');
+    if(!who||!nm||nm.querySelector('a')) return;
+    var e=V.byName[key(nm.textContent)]; if(!e) return;
+    var av=who.querySelector('.av'); if(av&&e.avatar&&!av.querySelector('img')) av.appendChild(U.img(e.avatar,28));
+    var text=nm.textContent; nm.textContent=''; nm.appendChild(U.link(text,e.id));
+    nm.parentNode.insertBefore(document.createTextNode(' '),nm.nextSibling);
+    nm.parentNode.insertBefore(U.check(),nm.nextSibling.nextSibling);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#tab-team .tc-card'),function(card){
+    var e=V.byId[card.getAttribute('data-pid')]; if(!e) return;
+    var box=card.querySelector('.tc-av'); if(box&&e.avatar&&!box.querySelector('img')) box.appendChild(U.img(e.avatar,88));
+    var nm=card.querySelector('.tc-nm'); if(!nm||nm.querySelector('a')) return;
+    var text=nm.textContent; nm.textContent=''; nm.appendChild(U.link(text,e.id));
+    nm.parentNode.appendChild(document.createTextNode(' ')); nm.parentNode.appendChild(U.check());
+  });
+});
+</script>
+<script>
+(function(){
+  /* Main leaderboard. Loaded from fsc_stats.json (same folder as this page) on EVERY page load,
+     so a new JSON file is picked up by simply reloading the page.
+     If the JSON cannot be loaded, a "could not be loaded" message is shown instead of the table. */
+  var JSON_URL=window.FSC_JSON_URL;
+
+  /* Check mark, ofstats link and avatar of verified players: read from discord_players.json (window.FSC_VER). */
+  /* rank name in the JSON -> symbol shown in the table */
+  var RANK_SYMBOL={
+    "GOD OF FULLSENDING":"❰《〔𖠦〕》❱",
+
+    "GRANDFULLSENDER":"★★★",
+
+    "MASTER OF FULLSENDING":"★★",
+
+    "FULLSEND TRAINER":"★",
+
+    "ELITE FULLSENDER":"︽︽︽",
+
+    "TRUE FULLSENDER":"︽︽",
+
+    "FULLSENDER":"︽",
+
+    "MINI FULLSENDER":"✧✧✧",
+
+    "SENDER":"✧✧",
+
+    "HALF SENDER":"✧",
+  };
+
+  var tbody=document.querySelector('.lbt tbody');
+  function norm(s){ return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]/g,''); }
+  function num(v){ return (typeof v==='number'&&isFinite(v))?v:0; }
+  function td(cls,text){ var c=document.createElement('td'); if(cls) c.className=cls; if(text!=null) c.textContent=text; return c; }
+
+  window.FSC_UI={rankSymbol:RANK_SYMBOL,norm:norm};   /* shared with the compare tab */
+
+  /* ---------- Rank helpers + icons (used by team cards, leaderboard dropdowns and compare) ---------- */
+  var RANK_ORDER=['HALF SENDER','SENDER','MINI FULLSENDER','FULLSENDER','TRUE FULLSENDER','ELITE FULLSENDER','FULLSEND TRAINER','MASTER OF FULLSENDING','GRANDFULLSENDER','GOD OF FULLSENDING'];
+  var RANK_META={
+    'MITOCHONDRIA':{g:'mito',n:0,pct:'all other members'},
+    'HALF SENDER':{g:'spark',n:1,pct:'top 80%'},
+    'SENDER':{g:'spark',n:2,pct:'top 70%'},
+    'MINI FULLSENDER':{g:'spark',n:3,pct:'top 60%'},
+    'FULLSENDER':{g:'chev',n:1,pct:'top 50%'},
+    'TRUE FULLSENDER':{g:'chev',n:2,pct:'top 40%'},
+    'ELITE FULLSENDER':{g:'chev',n:3,pct:'top 30%'},
+    'FULLSEND TRAINER':{g:'star',n:1,pct:'top 20%'},
+    'MASTER OF FULLSENDING':{g:'star',n:2,pct:'top 15%'},
+    'GRANDFULLSENDER':{g:'star',n:3,pct:'top 10%'},
+    'GOD OF FULLSENDING':{g:'god',n:1,pct:'top 5%'}
+  };
+  var RK_COL={
+    spark:{m:'#5fd3c4',d:'#16524d'},
+    chev:{m:'#9d92ff',d:'#322b6b'},
+    star:{m:'#e6c158',d:'#5a4510'},
+    god:{m:'#ffd35c',d:'#6b3410'},
+    mito:{m:'#8a968a',d:'#2f382f'},
+    none:{m:'#6a6a70',d:'#26262a'}
+  };
+  var RK_SHIELD='M24 2.5L42.5 9.5V24C42.5 35.5 34.5 43.5 24 46.5C13.5 43.5 5.5 35.5 5.5 24V9.5Z';
+  var RK_POS_SP={1:[[24,25,1]],2:[[16.5,24,.68],[31.5,24,.68]],3:[[24,17,.60],[17,28,.60],[31,28,.60]]};
+  var RK_POS_ST={1:[[24,25.2,1]],2:[[17,24,.58],[31,24,.58]],3:[[24,17.2,.43],[17,28.4,.43],[31,28.4,.43]]};
+  var RK_Y={
+  1:[25.5],
+  2:[19,27.5],
+  3:[15.6,22.8,30]
+};
+  var RK_CS={1:1,2:1,3:.85};
+  var rkSeq=0;
+  function rkKey(r){ return String(r==null?'':r).trim().toUpperCase(); }
+  function rankMeta(r){ return RANK_META[rkKey(r)]||null; }
+  function isRated(r){ var m=rankMeta(r); return !!m&&m.g!=='mito'; }
+  function rankIndex(r){ var i=RANK_ORDER.indexOf(rkKey(r)); return i<0?null:i+1; }
+  function rankPct(r){ var m=rankMeta(r); return m?m.pct:''; }
+  function rankName(r){
+    if(r==null||r==='') return '';
+    return String(r).trim().toLowerCase().split(/\s+/).map(function(w,i){ return (i&&w==='of')?w:w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+  }
+  function starPts(cx,cy,R){
+    var p=[], r=R*.42;
+    for(var i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, rr=i%2?r:R; p.push((cx+rr*Math.cos(a)).toFixed(2)+','+(cy+rr*Math.sin(a)).toFixed(2)); }
+    return p.join(' ');
+  }
+  function sparkPath(cx,cy,r){
+    return 'M'+cx+' '+(cy-r)+'Q'+cx+' '+cy+' '+(cx+r)+' '+cy+'Q'+cx+' '+cy+' '+cx+' '+(cy+r)+'Q'+cx+' '+cy+' '+(cx-r)+' '+cy+'Q'+cx+' '+cy+' '+cx+' '+(cy-r)+'Z';
+  }
+  function rankSvg(rank,shine){
+    var m=rankMeta(rank), g=m?m.g:'none', c=RK_COL[g], id='rk'+(++rkSeq), n=m?m.n:0, i, out='', fillG='url(#'+id+'g)';
+    out+='<defs>'
+      +'<linearGradient id="'+id+'b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.d+'"/><stop offset="1" stop-color="#121214"/></linearGradient>'
+      +'<linearGradient id="'+id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="'+c.m+'"/></linearGradient>'
+      +'<clipPath id="'+id+'c"><path d="'+RK_SHIELD+'"/></clipPath></defs>';
+    out+='<path d="'+RK_SHIELD+'" fill="url(#'+id+'b)" stroke="'+c.m+'" stroke-width="2" stroke-linejoin="round"/>';
+    out+='<path d="'+RK_SHIELD+'" transform="translate(24 24) scale(.82) translate(-24 -24)" fill="none" stroke="'+c.m+'" stroke-opacity=".35" stroke-width="1"/>';
+    if(g==='spark'){
+      RK_POS_SP[n].forEach(function(p){ out+='<path d="'+sparkPath(p[0],p[1],12*p[2])+'" fill="'+fillG+'"/>'; });
+    }else if(g==='chev'){
+      RK_Y[n].forEach(function(y){ var cs=RK_CS[n]; out+='<path d="M'+(24-9*cs)+' '+(y+3.5*cs)+'L24 '+(y-4*cs)+'L'+(24+9*cs)+' '+(y+3.5*cs)+'" fill="none" stroke="'+fillG+'" stroke-width="'+(3.4*(.6+.4*cs)).toFixed(2)+'" stroke-linecap="round" stroke-linejoin="round"/>'; });
+    }else if(g==='star'){
+      RK_POS_ST[n].forEach(function(p){ out+='<polygon points="'+starPts(p[0],p[1],12.5*p[2])+'" fill="'+fillG+'" stroke="'+c.m+'" stroke-width=".6" stroke-linejoin="round"/>'; });
+    }else if(g==='god'){
+      out+='<g transform="translate(24 21.2) scale(.85) translate(-24 -23.7)">';
+      out+='<path d="M11.5 33L13.5 17.5L19.5 25L24 13L28.5 25L34.5 17.5L36.5 33Z" fill="'+fillG+'" stroke="'+c.m+'" stroke-width="1" stroke-linejoin="round"/>';
+      out+='<rect x="11.5" y="34.5" width="25" height="3.2" rx="1.4" fill="'+fillG+'"/>';
+      [[13.5,16],[24,11.6],[34.5,16]].forEach(function(p){ out+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.9" fill="#fff"/>'; });
+      out+='<circle cx="24" cy="29" r="2.1" fill="#ff7a59"/>';
+      out+='</g>';
+    }else if(g==='mito'){
+      out+='<ellipse cx="24" cy="25" rx="12.5" ry="8" fill="none" stroke="'+c.m+'" stroke-width="2.2"/>';
+      out+='<path d="M14 25L18 20L22 30L26 20L30 30L34 25" fill="none" stroke="'+c.m+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+    }else{
+      out+='<path d="M16.5 25H31.5" stroke="'+c.m+'" stroke-width="3" stroke-linecap="round"/>';
+    }
+    if(shine) out+='<g clip-path="url(#'+id+'c)"><g class="rk-gloss"><rect x="-6" y="-8" width="11" height="64" fill="#fff" fill-opacity=".5" transform="rotate(24 24 24)"/></g></g>';
+    return '<svg viewBox="0 0 48 49" width="100%" height="100%" aria-hidden="true" focusable="false">'+out+'</svg>';
+  }
+  function rankIcon(rank,size,shine){
+    var m=rankMeta(rank), s=document.createElement('span');
+    s.className='rk-ico'+(shine?' shine':'')+(m&&m.g==='god'?' god':'');
+    if(size){ s.style.width=size+'px'; s.style.height=size+'px'; }
+    s.innerHTML=rankSvg(rank,!!shine);
+    return s;
+  }
+  window.FSC_UI.rankName=rankName; window.FSC_UI.rankIcon=rankIcon; window.FSC_UI.rankPct=rankPct;
+  window.FSC_UI.rankIndex=rankIndex; window.FSC_UI.isRated=isRated; window.FSC_UI.rankMeta=rankMeta;
+
+  function buildRow(p,i){
+    var ver=window.FSC_VER.byId[p.id]||null;   /* verified player from discord_players.json (matched by ofstats id) */
+    var tr=document.createElement('tr');
+    if(i<3) tr.className='g'+(i+1);
+    if(p.id){ tr.setAttribute('data-pid',p.id); tr.classList.add('lb-click'); tr.tabIndex=0; tr.setAttribute('aria-expanded','false'); }   /* click -> stats dropdown */
+    tr.appendChild(td('place',p.place+'.'));
+    var sym=RANK_SYMBOL[p.rank];
+    tr.appendChild(sym?td(null,sym):td('nr',p.rank==null?'—':p.rank));
+    var who=td('who'), av=document.createElement('span'); av.className='av';
+    if(ver&&ver.avatar) av.appendChild(window.FSC_UTIL.img(ver.avatar,28));
+    who.appendChild(av);
+    var nm=document.createElement('span'); nm.className='nm';
+    if(ver){ nm.appendChild(window.FSC_UTIL.link(ver.name||p.name,ver.id));
+      if(ver.name&&ver.name!==p.name) tr.setAttribute('data-alt',p.name); }   /* Discord name is shown; the OpenFront name stays searchable */
+    else nm.textContent=p.name;
+    who.appendChild(nm);
+    if(ver){
+      who.appendChild(document.createTextNode(' '));
+      who.appendChild(window.FSC_UTIL.check());
+    }
+    if(p.id){ var cv=document.createElement('span'); cv.className='lb-chev'; cv.setAttribute('aria-hidden','true'); who.appendChild(cv); }
+    tr.appendChild(who);
+    tr.appendChild(td(null,num(p.ffa_wins)+' / '+num(p.team_wins)+' / '+num(p.ranked_wins)));
+    tr.appendChild(td(null,num(p.wins_total)+' / '+num(p.losses_total)));
+    tr.appendChild(td(null,num(p.winrate_percent).toFixed(1)+'%'));
+    tr.appendChild(td('pt',String(num(p.points))));
+    return tr;
+  }
+
+  function apply(players){
+    var emptyTd=tbody.querySelector('td.empty'), empty=emptyTd&&emptyTd.parentNode;   /* "No players found" row of the search */
+    Array.prototype.slice.call(tbody.querySelectorAll('tr')).forEach(function(r){ if(r!==empty) r.remove(); });
+    players.slice().sort(function(a,b){ return num(a.place)-num(b.place); }).forEach(function(p,i){
+      tbody.insertBefore(buildRow(p,i),empty||null);
+    });
+    if(window.lbRefresh) window.lbRefresh();   /* re-apply the current search text */
+  }
+
+  /* query string + no-store: always fetch the fresh file, never a cached copy */
+  window.FSC_DATA
+    .then(function(data){
+      /* total clan members (e.g. 387) -> badge under the logo */
+      var total=data&&Number(data.clan_total_members);
+      if(total>0){
+        var badge=document.getElementById('clanMembers'), numEl=document.getElementById('clanMembersNum');
+        if(badge&&numEl){
+          numEl.textContent=total.toLocaleString('en-US');
+          document.getElementById('clanMembersLbl').textContent=total===1?'member':'members';
+          badge.hidden=false;
+          /* listed = players in the table (min. wins), ranked = listed players that have a rank (rated) */
+          if(data&&Array.isArray(data.players)&&data.players.length){
+            var listed=data.players.length, ranked=data.players.filter(function(p){ return isRated(p.rank); }).length;
+            document.getElementById('clanListedNum').textContent=listed.toLocaleString('en-US');
+            document.getElementById('clanRankedNum').textContent=ranked.toLocaleString('en-US');
+            document.getElementById('clanListedRow').hidden=false;
+            document.getElementById('clanRankedRow').hidden=false;
+          }
+        }
+      }
+      if(!data||!Array.isArray(data.players)||!data.players.length) throw new Error('no "players" list in the file');
+      apply(data.players);
+    })
+    .catch(function(err){
+      console.error(JSON_URL+': '+err.message+' (if you opened the page as a file:// , serve it over http instead).');
+      var st=tbody.querySelector('.lb-status td'); if(st) st.textContent='Leaderboard data could not be loaded.';
+    });
+})();
+</script>
+<script>
+(function(){
+  /* Player stats for the Competitive Team tab.
+     Loaded from fsc_stats.json (same folder as this page) on EVERY page load,
+     so a new JSON file is picked up by simply reloading the page.
+     Same file as the main leaderboard: stats are taken from "tracked_players" and "players" (field "stats"). */
+  var JSON_URL=window.FSC_JSON_URL;
+  var byId={};   /* player id -> flat stats object, filled once the file is loaded */
+  var byClan={};   /* player id -> {inLb, place, rank, points} from the leaderboard */
+  var UI=window.FSC_UI;
+  var LOBBY_GAMES=100;   /* "Avg lobby size" is always labelled as based on 100 games */
+
+  /* Players with several accounts get an "All / First / Second account" menu.
+     The SECOND account is the one from fsc_stats.json (loaded live).
+     The FIRST account has no id for the parser, so its values are entered by hand
+     here (taken from its ofstats profile) and do NOT update automatically. */
+  var FIRST_ACCOUNT_MALIGNANT={
+    id:null,                               /* shown as a dash */
+    highest_leaderboard_place:72,
+    highest_tier:'Diamond I',
+    peak_rating:2264,
+    avg_lobby_size:59, avg_lobby_size_games:100,
+    all_modes:{win_rate_pct:39.7, games_played:1049, wins:416, losses:633},
+    time_played:'283h 24m', time_played_hours:283.4,
+    ffa:{games:830, win_rate_pct:35.5},
+    team:{games:89, win_rate_pct:38.2},
+    ranked:{games:128, win_rate_pct:68.0}
+  };
+  var MULTI={ JMngHxBd:FIRST_ACCOUNT_MALIGNANT };   /* player id (second account) -> first account */
+
+  var cards=[];
+  function grabCards(){ cards=Array.prototype.slice.call(document.querySelectorAll('#tab-team .tc-card')); }
+
+  /* ---- small helpers ---- */
+  function el(tag,cls,text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+  function isNum(v){ return typeof v==='number' && isFinite(v); }
+  function int(v){ return isNum(v)?v.toLocaleString('en-US'):'—'; }
+  function dec(v,d){ return isNum(v)?v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'; }
+  function pc(v,d){ return isNum(v)?dec(v,d==null?1:d)+'%':'—'; }
+  function txt(v){ return (v==null||v==='')?'—':String(v); }
+  function clamp(v){ return isNum(v)?Math.max(0,Math.min(100,v)):0; }
+  function row(label,value,cls){
+    var r=el('div','ps-r'+(cls?' '+cls:''));
+    r.appendChild(el('span',null,label)); r.appendChild(el('span',null,value));
+    return r;
+  }
+  function head(title,extra){ var h=el('div','ps-h'); h.appendChild(el('span',null,title)); if(extra) h.appendChild(extra); return h; }
+  function put(parent,v){ if(v&&v.nodeType) parent.appendChild(v); else parent.textContent=v; }
+
+  /* ---- indicators ---- */
+  var TIER_COLORS={iron:'#8d939c',bronze:'#cd7f32',silver:'#c0c6d0',gold:'#e6c158',platinum:'#4fd1c5',diamond:'#5aa9ff',master:'#b57bff',grandmaster:'#ff5a5f'};
+  function tierColor(t){ return TIER_COLORS[String(t||'').split(' ')[0].toLowerCase()]||'#909096'; }
+  function topChip(place){
+    if(!isNum(place)) return null;
+    var steps=[10,25,100,250,500,1000];
+    for(var i=0;i<steps.length;i++) if(place<=steps[i]) return 'TOP '+steps[i];
+    return null;
+  }
+  /* ---- "Top X%" from the highest leaderboard place ---- */
+  var TOTAL_PLAYERS=800000;   /* approximate number of ranked players */
+  function topPct(place){
+    if(!isNum(place)||place<=0) return null;
+    var v=place/TOTAL_PLAYERS*100;
+    return 'Top '+Number(v.toPrecision(2)).toLocaleString('en-US',{maximumFractionDigits:6})+'%';
+  }
+  var tipEl=null;
+  function showTip(q){
+    if(!tipEl){
+      tipEl=el('div','ps-tip'); tipEl.setAttribute('role','tooltip'); tipEl.hidden=true;
+      document.body.appendChild(tipEl);
+    }
+    tipEl.textContent='';
+    tipEl.appendChild(document.createTextNode('Approximate share of players you are ahead of at your best:'));
+    tipEl.appendChild(el('code',null,'highest place ÷ '+TOTAL_PLAYERS.toLocaleString('en-US')+' × 100'));
+    tipEl.appendChild(document.createTextNode('This is an estimate based on roughly '+TOTAL_PLAYERS.toLocaleString('en-US')+' players in total.'));
+    tipEl.hidden=false;
+    var r=q.getBoundingClientRect(), w=tipEl.offsetWidth, h=tipEl.offsetHeight;
+    var left=Math.max(8,Math.min(window.innerWidth-w-8,r.left+r.width/2-w/2));
+    var top=r.top-h-8; if(top<8) top=r.bottom+8;
+    tipEl.style.left=left+'px'; tipEl.style.top=top+'px';
+  }
+  function hideTip(){ if(tipEl) tipEl.hidden=true; }
+  function placeSub(place,chip){
+    var pct=topPct(place);
+    if(!chip&&!pct) return null;
+    var w=el('span','ps-sub');
+    if(chip) w.appendChild(chip);
+    if(pct){
+      w.appendChild(el('span','ps-top',pct));
+      var q=el('span','ps-q','?');
+      q.tabIndex=0; q.setAttribute('aria-label','How is this calculated?');
+      q.addEventListener('mouseenter',function(){ showTip(q); });
+      q.addEventListener('mouseleave',hideTip);
+      q.addEventListener('focus',function(){ showTip(q); });
+      q.addEventListener('blur',hideTip);
+      q.addEventListener('click',function(e){ e.preventDefault(); showTip(q); });
+      w.appendChild(q);
+    }
+    return w;
+  }
+  window.addEventListener('scroll',hideTip,{passive:true});
+  /* ---- building blocks ---- */
+  function tile(label,value,sub){
+    var t=el('div','ps-tile');
+    t.appendChild(el('span','tl',label));
+    var v=el('span','tv'); put(v,value); t.appendChild(v);
+    if(sub){ var s=el('span','ts'); put(s,sub); t.appendChild(s); }
+    return t;
+  }
+  function winPanel(title,m){
+    var d=el('div','ps-mode');
+    d.appendChild(el('div','mh',title));
+    var big=el('div','big',pc(m.win_rate_pct)); big.appendChild(el('small',null,'win rate')); d.appendChild(big);
+    var bar=el('div','ps-bar'), fill=el('i'); fill.style.width=clamp(m.win_rate_pct)+'%'; bar.appendChild(fill); d.appendChild(bar);
+    d.appendChild(row('Games',int(m.games)));
+    return d;
+  }
+  function allPanel(a){
+    var d=el('div','ps-mode');
+    d.appendChild(el('div','mh','All modes'));
+    var body=el('div','ps-mb');
+    var rc=el('div','ps-rc'), ring=el('div','ps-ring');
+    ring.style.setProperty('--p',clamp(a.win_rate_pct));
+    ring.appendChild(el('span',null,pc(a.win_rate_pct)));
+    rc.appendChild(ring); rc.appendChild(el('small',null,'win rate'));
+    var list=el('div','ps-ml');
+    list.appendChild(row('Games',int(a.games_played)));
+    list.appendChild(row('Wins',int(a.wins),'w'));
+    list.appendChild(row('Losses',int(a.losses),'l'));
+    body.appendChild(rc); body.appendChild(list); d.appendChild(body);
+    return d;
+  }
+
+  /* ---- clan data (rank + "Clan contribution" = leaderboard points) ---- */
+  function clanOf(id){ return byClan[id]||{inLb:false}; }
+  function clanTile(c){
+    var t=el('div','ps-tile clan'), l=el('div','cl-l'), on=!!(c&&c.inLb&&isNum(c.points));
+    if(!on) t.classList.add('off');
+    if(on&&isNum(c.place)&&c.place>=1&&c.place<=3) t.classList.add('podium');
+    l.appendChild(el('span','tl','Clan contribution'));
+    var sub=(c&&c.inLb)?(isNum(c.place)?'#'+c.place+' in the clan leaderboard':'in leaderboard'):'not in leaderboard';
+    l.appendChild(el('span','ts',sub));
+    t.appendChild(l);
+    var v=el('span','tv');
+    if(on){ v.appendChild(document.createTextNode(String(Math.round(c.points*10)/10))); v.appendChild(el('small',null,'points')); }
+    else v.textContent='—';
+    t.appendChild(v);
+    return t;
+  }
+  /* rank chip in the top-right corner of a team card (under the TEAM LEAD badge for the lead) */
+  function drawSide(card,c){
+    var side=card.querySelector('.tc-side');
+    if(!side){
+      side=el('div','tc-side');
+      var lead=card.querySelector('.tc-lead'); if(lead) side.appendChild(lead);
+      card.appendChild(side);
+    }
+    var old=side.querySelector('.tc-rank'); if(old) old.remove();
+    var inLb=!!(c&&c.inLb), rated=inLb&&UI.isRated(c.rank);
+    var chip=el('div','tc-rank'+(rated?'':' none'));
+    if(rated){ chip.appendChild(UI.rankIcon(c.rank,26)); chip.appendChild(el('span',null,UI.rankName(c.rank))); chip.title=UI.rankName(c.rank)+' · '+UI.rankPct(c.rank); }
+    else chip.textContent=inLb?'in leaderboard, not rated':'not in leaderboard';
+    side.appendChild(chip);
+  }
+
+  /* ---- Competitive Team: combined stats of the main competitive team (middle column) ---- */
+  function drawMid(){
+    var body=document.querySelector('#tcMid .tm-body'), g=document.querySelector('#tab-team .tc-group.pri');
+    if(!body||!g) return;
+    var COL=['#e6c158','#b57bff','#4fd1c5','#ff5a5f'], P=[];
+    Array.prototype.forEach.call(g.parentNode.querySelectorAll('.tc-card'),function(c){
+      var id=c.getAttribute('data-pid'), nm=c.querySelector('.tc-nm'), d=byId[id];
+      if(MULTI[id]) d=(d&&!d.error)?combine(MULTI[id],d):MULTI[id];
+      if(!d||d.error) return;
+      var cl=clanOf(id);
+      P.push({n:nm?nm.textContent:id, d:d, pts:(cl.inLb&&isNum(cl.points))?cl.points:0, col:COL[P.length%COL.length], cl:cl});
+    });
+    body.textContent='';
+    if(!P.length){ body.textContent='No stats for the main competitive team yet'; return; }
+    function sum(f){ return P.reduce(function(a,p){ return a+(f(p)||0); },0); }
+    var games=sum(function(p){return num(p.d.all_modes,'games_played');}), wins=sum(function(p){return num(p.d.all_modes,'wins');});
+    var pts=sum(function(p){return p.pts;}), hrs=sum(function(p){return p.d.time_played_hours;});
+    var peaks=P.map(function(p){return num(p.d,'peak_rating');}), places=P.map(function(p){return p.d.highest_leaderboard_place;}).filter(isNum);
+    var lobby=Math.round(sum(function(p){return p.d.avg_lobby_size;})/P.length);
+    var wr=games?100*wins/games:null;
+    var MODES=[['ffa','FFA','#e6c158'],['team','Team','#5aa9ff'],['ranked','Ranked','#b57bff']];
+    var mg={}, mw={};
+    MODES.forEach(function(m){ mg[m[0]]=sum(function(p){return modeGames(p.d[m[0]]);}); mw[m[0]]=sum(function(p){return modeWins(p.d[m[0]]);}); });
+
+    function sec(title){ var d=el('div'); d.appendChild(el('div','tm-h',title)); body.appendChild(d); return d; }
+    function bar(parent,label,frac,txt,color){
+      var r=el('div','tm-row'), b=el('div','tm-bar'), i=el('i');
+      i.style.width=clamp(frac)+'%'; if(color) i.style.setProperty('--c',color);
+      b.appendChild(i); r.appendChild(el('span','n',label)); r.appendChild(b); r.appendChild(el('span','x',txt)); parent.appendChild(r);
+    }
+    function stack(parent,segs){
+      var tot=segs.reduce(function(a,x){return a+x.v;},0)||1, st=el('div','tm-stack'), lg=el('div','tm-leg');
+      segs.forEach(function(x){
+        var i=el('i'); i.style.flex=String(x.v||0.001); i.style.setProperty('--c',x.c); i.title=x.l+': '+x.t; st.appendChild(i);
+        var sp=el('span'); sp.style.setProperty('--c',x.c); sp.appendChild(document.createTextNode(x.l+' ')); sp.appendChild(el('b',null,x.t+' · '+Math.round(100*x.v/tot)+'%')); lg.appendChild(sp);
+      });
+      parent.appendChild(st); parent.appendChild(lg);
+    }
+
+    /* clan contribution: team total */
+    var ct=el('div','ps-tile clan'), cl=el('div','cl-l'), cv=el('span','tv');
+    ct.style.marginBottom='0';
+    cl.appendChild(el('span','tl','Clan contribution')); cl.appendChild(el('span','ts','Priority team total'));
+    cv.appendChild(document.createTextNode(int(Math.round(pts*10)/10))); cv.appendChild(el('small',null,'points'));
+    ct.appendChild(cl); ct.appendChild(cv); body.appendChild(ct);
+    /* KPI tiles */
+    var k=el('div','tm-kpis');
+    [['Total wins',int(wins),pc(wr)+' win rate'],
+     ['Avg peak rating',int(Math.round(sum(function(p){return num(p.d,'peak_rating');})/P.length)),'best '+int(Math.max.apply(null,peaks))],
+     ['Games played',int(games),'across '+P.length+' players'],
+     ['Time played',int(Math.round(hrs))+' h','avg '+int(Math.round(hrs/P.length))+' h each'],
+     ['Avg lobby size',int(lobby),'of '+LOBBY_GAMES+' games'],
+     ['Best place',places.length?'#'+int(Math.min.apply(null,places)):'—','highest on the team']
+    ].forEach(function(x){ var t=el('div','tm-k'); t.appendChild(el('span','l',x[0])); t.appendChild(el('span','v',x[1])); t.appendChild(el('span','s',x[2])); k.appendChild(t); });
+    var top=P.reduce(function(a,p){ return num(p.d,'peak_rating')>num(a.d,'peak_rating')?p:a; },P[0]);
+    var t1=el('div','tm-k rk'), v1=el('span','v',txt(top.d.highest_tier)); v1.style.color=tierColor(top.d.highest_tier);
+    t1.appendChild(el('span','l','Highest rank')); t1.appendChild(v1); t1.appendChild(el('span','s','from ofstats.io')); k.appendChild(t1);
+    var rated=P.filter(function(p){ return p.cl&&p.cl.inLb&&isNum(p.cl.place)&&UI.isRated(p.cl.rank); }).sort(function(a,b){ return a.cl.place-b.cl.place; });
+    var t2=el('div','tm-k rk');
+    t2.appendChild(el('span','l','Highest rank')); t2.appendChild(el('span','v',rated.length?UI.rankName(rated[0].cl.rank):'—')); t2.appendChild(el('span','s','from fullsendstats.com')); k.insertBefore(t2,t1);
+    body.appendChild(k);
+
+    /* win rate (red) and games: ring + per-mode bars */
+    var RED='#e5484d';
+    function ringBox(bg,val,sub){
+      var r=el('div','tm-ring'), t=el('span',null,val);
+      r.style.background=bg; t.appendChild(el('small',null,sub)); r.appendChild(t); return r;
+    }
+    var w=sec('Team win rate'), wrap=el('div','tm-wr'), bars=el('div');
+    MODES.forEach(function(m){ var v=mg[m[0]]?100*mw[m[0]]/mg[m[0]]:null; bar(bars,m[1],v||0,pc(v),RED); });
+    wrap.appendChild(ringBox('conic-gradient('+RED+' '+clamp(wr)+'%,#26262a 0)',pc(wr),'all modes')); wrap.appendChild(bars); w.appendChild(wrap);
+    var gm=sec('Games by mode'), gwrap=el('div','tm-wr'), gbars=el('div'), acc=0, segs=[];
+    MODES.forEach(function(m){
+      var sh=games?100*mg[m[0]]/games:0; segs.push(m[2]+' '+acc+'% '+(acc+sh)+'%'); acc+=sh;
+      bar(gbars,m[1],sh,int(mg[m[0]]),m[2]);
+    });
+    gwrap.appendChild(ringBox('conic-gradient('+segs.join(',')+')',int(games),'all modes')); gwrap.appendChild(gbars); gm.appendChild(gwrap);
+  }
+
+  /* Competitive Team (3 columns): keep the full-size card layout and scale the whole card down to the column width */
+  (function(){
+    var grid=document.querySelector('#tab-team .tc-grid'), W0=494, mq=window.matchMedia('(min-width:901px)');
+    if(!grid) return;
+    function fit(){
+      var on=mq.matches; grid.classList.toggle('fit',on);
+      Array.prototype.forEach.call(grid.querySelectorAll('.tc-col'),function(col){
+        var z=on?Math.min(1,col.clientWidth/W0):0;
+        Array.prototype.forEach.call(col.querySelectorAll('.tc-card'),function(c){ c.style.zoom=z?String(z):''; });
+      });
+    }
+    if(window.ResizeObserver) new ResizeObserver(fit).observe(grid);
+    window.addEventListener('resize',fit);
+    if(mq.addEventListener) mq.addEventListener('change',fit);
+    window.FSC_fitTeam=fit; fit();
+  })();
+
+  var KNOWN={id:1,name:1,highest_leaderboard_place:1,highest_tier:1,peak_rating:1,avg_lobby_size:1,avg_lobby_size_games:1,all_modes:1,time_played:1,time_played_hours:1,ffa:1,team:1,ranked:1,error:1};
+
+  function render(box,p,menu){
+    box.textContent='';
+    box.classList.add('ps');
+    if(p.error){ box.appendChild(el('div','ps-na ps-err','Failed to load stats: '+p.error)); return; }
+    var card=box.closest('.tc-card')||box, color=tierColor(p.highest_tier);
+    if(card) card.style.setProperty('--tier',color);
+    var a=p.all_modes||{}, f=p.ffa||{}, t=p.team||{}, r=p.ranked||{};
+
+    box.appendChild(clanTile(clanOf(box.dataset.pid)));
+    box.appendChild(head('Overview',menu));
+    var tiles=el('div','ps-tiles');
+    var place=p.highest_leaderboard_place, chip=topChip(place);
+    tiles.appendChild(tile('Player ID',txt(p.id)));
+    var hp=el('span','ps-hp'); hp.appendChild(el('span',null,isNum(place)?'#'+int(place):'—'));
+    if(chip) hp.appendChild(el('span','ps-chip',chip));
+    tiles.appendChild(tile('Highest place',hp,placeSub(place,null)));
+    tiles.appendChild(tile('Highest tier',el('span','ps-tier',txt(p.highest_tier))));
+    tiles.appendChild(tile('Peak rating',int(p.peak_rating)));
+    tiles.appendChild(tile('Avg lobby size',int(p.avg_lobby_size),isNum(p.avg_lobby_size)?'(of '+LOBBY_GAMES+' games)':null));
+    tiles.appendChild(tile('Time played',txt(p.time_played),isNum(p.time_played_hours)?'('+dec(p.time_played_hours,1)+' h)':null));
+    /* any new top-level scalar fields that appear in the JSON later */
+    Object.keys(p).filter(function(k){ return !KNOWN[k] && (p[k]===null||typeof p[k]!=='object'); })
+      .forEach(function(k){ tiles.appendChild(tile(k.replace(/_/g,' '),txt(p[k]))); });
+    box.appendChild(tiles);
+
+    var modes=el('div','ps-modes');
+    modes.appendChild(allPanel(a));
+    modes.appendChild(winPanel('Free For All',f));
+    modes.appendChild(winPanel('Team',t));
+    modes.appendChild(winPanel('Ranked',r));
+    box.appendChild(modes);
+  }
+
+  /* ---- several accounts of one player ---- */
+  function minutes(p){
+    var m=/(\d+)\s*h\s*(\d+)\s*m/.exec(p.time_played||'');
+    if(m) return (+m[1])*60+(+m[2]);
+    return isNum(p.time_played_hours)?Math.round(p.time_played_hours*60):0;
+  }
+  function num(o,k){ return o&&isNum(o[k])?o[k]:0; }
+  function modeGames(m){ return num(m,'games'); }
+  function modeWins(m){ return (m&&isNum(m.games)&&isNum(m.win_rate_pct))?Math.round(m.games*m.win_rate_pct/100):0; }
+
+  /* merge two accounts into one profile */
+  function combine(a,b){
+    function mode(k){
+      var g=modeGames(a[k])+modeGames(b[k]);
+      return {games:g, win_rate_pct:g?100*(modeWins(a[k])+modeWins(b[k]))/g:null};
+    }
+    var A=a.all_modes||{}, B=b.all_modes||{};
+    var gp=num(A,'games_played')+num(B,'games_played');
+    var w=num(A,'wins')+num(B,'wins'), l=num(A,'losses')+num(B,'losses');
+    var places=[a.highest_leaderboard_place,b.highest_leaderboard_place].filter(isNum);
+    var peaks=[a.peak_rating,b.peak_rating].filter(isNum);
+    var ids=[a.id,b.id].filter(Boolean);
+    /* the account with the higher peak rating also holds the higher tier */
+    var best=num(a,'peak_rating')>=num(b,'peak_rating')?a:b;
+    var lw=0, ls=0;   /* lobby size: average weighted by the number of games behind each value */
+    [a,b].forEach(function(x){
+      if(!isNum(x.avg_lobby_size)) return;
+      var g=(isNum(x.avg_lobby_size_games)&&x.avg_lobby_size_games>0)?x.avg_lobby_size_games:1;
+      lw+=g; ls+=x.avg_lobby_size*g;
+    });
+    var m=minutes(a)+minutes(b);
+    return {
+      id:ids.length?ids.join(' / '):null,
+      highest_leaderboard_place:places.length?Math.min.apply(null,places):null,
+      highest_tier:best.highest_tier,
+      peak_rating:peaks.length?Math.max.apply(null,peaks):null,
+      avg_lobby_size:lw?Math.round(ls/lw):null,
+      avg_lobby_size_games:lw,
+      all_modes:{win_rate_pct:gp?100*w/gp:null, games_played:gp, wins:w, losses:l},
+      time_played:Math.floor(m/60)+'h '+(m%60)+'m',
+      time_played_hours:Math.round(m/6)/10,
+      ffa:mode('ffa'), team:mode('team'), ranked:mode('ranked')
+    };
+  }
+
+  /* card with the account menu; "All accounts" is the default view */
+  function renderMulti(box,second,first){
+    var sel=el('select','ps-sel');
+    sel.setAttribute('aria-label','Account');
+    [['all','All accounts'],['first','First account'],['second','Second account']].forEach(function(o){
+      var op=el('option',null,o[1]); op.value=o[0]; sel.appendChild(op);
+    });
+    var ok=second && !second.error;
+    function draw(){
+      var v=sel.value, hadFocus=document.activeElement===sel, data=null;
+      if(v==='first') data=first;
+      else if(ok) data=(v==='second')?second:combine(first,second);
+      if(data) render(box,data,sel);
+      else{
+        box.textContent=''; box.classList.add('ps');
+        box.appendChild(head('Overview',sel));
+        box.appendChild(el('div','ps-na ps-err',second&&second.error?'Failed to load stats: '+second.error:'No stats for this account yet'));
+      }
+      if(hadFocus) sel.focus();
+    }
+    sel.addEventListener('change',draw);
+    sel.value='all';
+    draw();
+  }
+
+  function fail(msg){
+    grabCards();
+    cards.forEach(function(c){
+      var box=c.querySelector('.tc-stats'); if(!box) return;
+      box.classList.remove('ps'); box.textContent=msg;
+    });
+  }
+
+  function load(){
+    /* query string + no-store: always fetch the fresh file, never a cached copy */
+    window.FSC_DATA
+      .then(function(data){
+        grabCards();
+        /* one file for everything: stats live in players[].stats and tracked_players[].stats.
+           render() expects a flat object {id, highest_tier, all_modes, ...}, so merge id + stats. */
+        function addStats(p){
+          if(!p||!p.id) return;
+          if(p.stats) byId[p.id]=Object.assign({id:p.id},p.stats);
+          else if(p.error) byId[p.id]={id:p.id,error:p.error};
+        }
+        (data.players||[]).forEach(addStats);
+        (data.tracked_players||[]).forEach(addStats);   /* tracked_players win if a player is in both */
+        /* clan leaderboard info: rank + points ("Clan contribution") */
+        (data.players||[]).forEach(function(p){ if(p&&p.id) byClan[p.id]={inLb:true,place:p.place,rank:p.rank,points:p.points}; });
+        (data.tracked_players||[]).forEach(function(t){
+          if(!t||!t.id||byClan[t.id]) return;
+          byClan[t.id]=t.in_table?{inLb:true,place:t.table_place,rank:t.table_rank,points:t.table_points}:{inLb:false};
+        });
+        cards.forEach(function(c){
+          var box=c.querySelector('.tc-stats'), id=c.getAttribute('data-pid');
+          if(!box||!id) return;
+          var p=byId[id];
+          if(id){ box.dataset.pid=id; drawSide(c,clanOf(id)); }
+          if(id&&MULTI[id]) renderMulti(box,p,MULTI[id]);
+          else if(p) render(box,p);
+          else box.textContent='No stats for this player yet';
+        });
+        if(window.FSC_fitTeam) window.FSC_fitTeam();
+        try{ drawMid(); }catch(e){ console.error('team stats: '+e.message); }
+        /* both teams: Team Lead first, then the rest by clan rank (leaderboard place), unranked last */
+        document.querySelectorAll('.tc-col').forEach(function(col){
+          var g=col.querySelector('.tc-group'); if(!g) return;
+          var arr=Array.prototype.slice.call(col.querySelectorAll('.tc-card'));
+          function pl(c){ var x=clanOf(c.getAttribute('data-pid')); return (x&&x.inLb&&isNum(x.place))?x.place:Infinity; }
+          function ld(c){ return c.classList.contains('lead')?0:1; }
+          arr.map(function(c,i){ return {c:c,i:i,l:ld(c),p:pl(c)}; })
+            .sort(function(a,b){ return a.l!==b.l?a.l-b.l:(a.p===b.p?a.i-b.i:(a.p<b.p?-1:1)); })
+            .forEach(function(o){ col.appendChild(o.c); });
+        });
+      })
+      .catch(function(err){
+        console.error(JSON_URL+': '+err.message+' (if you opened the page as a file://, serve it over http instead)');
+        fail('Stats unavailable');
+      });
+  }
+  /* used by the leaderboard dropdowns and by the compare tab */
+  function renderFor(box,id){
+    box.dataset.pid=id;
+    var p=byId[id];
+    if(MULTI[id]) renderMulti(box,p,MULTI[id]);
+    else if(p) render(box,p);
+    else{ box.classList.remove('ps'); box.textContent='No stats for this player yet'; }
+  }
+  window.FSCStats={byId:byId,clanOf:clanOf,MULTI:MULTI,combine:combine,render:render,renderFor:renderFor,
+    tierColor:tierColor,isNum:isNum,int:int,dec:dec,pc:pc,txt:txt};
+  load();
+})();
+</script>
+<script>
+(function(){
+  var S=window.FSCStats;
+  var UI=window.FSC_UI||{meta:{},rankSymbol:{},norm:function(s){ return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]/g,''); }};
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(tag,cls,text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+
+  /* =====================================================================
+     1. Leaderboard: click a player -> the same stats block as in Competitive Team
+     ===================================================================== */
+  var tbody=document.querySelector('.lbt tbody');
+  var COLS=7;
+
+  function detailOf(tr){ var n=tr.nextElementSibling; return (n&&n.classList.contains('lb-detail'))?n:null; }
+
+  /* rank banner at the top of a dropdown: icon + rank name + clan place. Top 1-3 shimmer like in the table. */
+  function rankBanner(c){
+    c=c||{inLb:false};
+    var place=c.place, t=(c.inLb&&place>=1&&place<=3)?place:0, rated=c.inLb&&UI.isRated(c.rank);
+    var b=el('div','rk-banner'+(t?' t'+t:''));
+    b.appendChild(UI.rankIcon(rated?c.rank:null,64,!!t&&rated));
+    var info=el('div','rk-info');
+    info.appendChild(el('div','rk-name',rated?UI.rankName(c.rank):'Not rated'));
+    info.appendChild(el('div','rk-sub',rated?'Clan rank · '+UI.rankPct(c.rank):(c.inLb?'in leaderboard, not rated':'not in leaderboard')));
+    b.appendChild(info);
+    if(c.inLb&&S.isNum(place)){
+      var side=el('div','rk-side'); side.appendChild(el('b',null,'#'+place)); side.appendChild(el('span',null,'in leaderboard'));
+      b.appendChild(side);
+    }
+    return b;
+  }
+
+  function buildDetail(id){
+    var d=el('tr','lb-detail'), td=el('td','lbd-cell');
+    td.colSpan=COLS;
+    var wrap=el('div','lbd-wrap'), clip=el('div','lbd-clip'), inner=el('div','lbd-in');
+    var actions=el('div','lbd-actions');
+    var prof=el('a','lbd-btn','Open on ofstats.ioㅤ↗');
+    prof.href='https://ofstats.io/player/'+encodeURIComponent(id); prof.target='_blank'; prof.rel='noopener';
+    var cmp=el('button','lbd-btn','↹ㅤCompare'); cmp.type='button'; cmp.setAttribute('data-cmp',id);
+    actions.appendChild(prof); actions.appendChild(cmp);
+    var box=el('div','lbd-box');
+    S.renderFor(box,id);
+    inner.appendChild(actions); inner.appendChild(rankBanner(S.clanOf(id))); inner.appendChild(box);
+    clip.appendChild(inner); wrap.appendChild(clip); td.appendChild(wrap); d.appendChild(td);
+    return d;
+  }
+  function openRow(tr){
+    var d=detailOf(tr);
+    if(!d){ d=buildDetail(tr.getAttribute('data-pid')); tr.parentNode.insertBefore(d,tr.nextSibling); }
+    d.classList.add('show');
+    tr.classList.add('is-open'); tr.setAttribute('aria-expanded','true');
+    var wrap=d.querySelector('.lbd-wrap');
+    void wrap.offsetHeight;                       /* commit the closed state, then animate open */
+    wrap.classList.add('open');
+  }
+  function closeRow(tr){
+    tr.classList.remove('is-open'); tr.setAttribute('aria-expanded','false');
+    var d=detailOf(tr); if(!d) return;
+    var wrap=d.querySelector('.lbd-wrap');
+    wrap.classList.remove('open');
+    function hide(){ if(!wrap.classList.contains('open')) d.classList.remove('show'); }
+    if(reduce){ hide(); return; }
+    wrap.addEventListener('transitionend',function f(e){
+      if(e.target!==wrap) return;
+      wrap.removeEventListener('transitionend',f); hide();
+    });
+    setTimeout(hide,450);                         /* fallback if transitionend never fires */
+  }
+  function toggleRow(tr){ if(tr.classList.contains('is-open')) closeRow(tr); else openRow(tr); }
+
+  tbody.addEventListener('click',function(e){
+    var btn=e.target.closest('.lbd-btn[data-cmp]');
+    if(btn){ compareWith(btn.getAttribute('data-cmp')); return; }
+    var tr=e.target.closest('tr.lb-click');
+    if(!tr||!tbody.contains(tr)) return;
+    var a=e.target.closest('a');
+    if(a&&(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)) return;   /* ctrl/cmd-click still opens the ofstats profile */
+    if(a) e.preventDefault();
+    toggleRow(tr);
+  });
+  tbody.addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('tr.lb-click')){ e.preventDefault(); toggleRow(e.target); }
+  });
+
+  /* =====================================================================
+     2. Compare players
+     ===================================================================== */
+  var root=document.getElementById('cpRoot');
+  var cands={}, order=[];
+  var state={a:null,b:null,acc:{a:'all',b:'all'},view:'charts'};
+  var curPop=null;
+
+  /* ---- tiers: "Diamond I" > "Diamond II" > "Platinum I" ... ---- */
+  var TIER_BASE=['iron','bronze','silver','gold','platinum','diamond','master','grandmaster'];
+  var ROMAN={i:1,ii:2,iii:3,iv:4,v:5};
+  function tierScore(t){
+    if(!t) return null;
+    var p=String(t).trim().toLowerCase().split(/\s+/), b=TIER_BASE.indexOf(p[0]);
+    if(b<0) return null;
+    var dv=ROMAN[p[1]]||(+p[1])||1;
+    return b*10+(10-dv);
+  }
+
+  /* ---- metric getters ---- */
+  function path(p){
+    var ks=p.split('.');
+    return function(P){
+      var o=P.st; if(!o) return null;
+      for(var i=0;i<ks.length;i++){ if(o==null) return null; o=o[ks[i]]; }
+      return (o===undefined)?null:o;
+    };
+  }
+  function lbf(k){ return function(P){ return (P.lb&&P.c[k]!=null)?P.c[k]:null; }; }
+  function place(v){ return '#'+S.int(v); }
+  function one(v){ return S.dec(v,1); }
+  function pct(v){ return S.pc(v,1); }
+
+  /* better: 'high' | 'low' | null (shown, but no winner) ; bar: 'pct' = value is 0..100 */
+  var SECTIONS=[
+    {t:'Leaderboard',rows:[
+      {l:'Place',get:lbf('place'),fmt:place,better:'low'},
+      {l:'Clan rank',get:function(P){ return P.lb?UI.rankIndex(P.c.rank):null; },fmt:function(v,P){ return UI.rankName(P.c.rank); },better:'high',nodelta:true},
+      {l:'Clan contribution',get:lbf('points'),fmt:function(v){ return String(Math.round(v*10)/10); },better:'high',unit:' pts'},
+      {l:'FFA wins',get:lbf('ffa_wins'),fmt:S.int,better:'high'},
+      {l:'Team wins',get:lbf('team_wins'),fmt:S.int,better:'high'},
+      {l:'Ranked wins',get:lbf('ranked_wins'),fmt:S.int,better:'high'},
+      {l:'Total wins',get:lbf('wins_total'),fmt:S.int,better:'high'},
+      {l:'Total losses',get:lbf('losses_total'),fmt:S.int,better:'low'},
+      {l:'Winrate',get:lbf('winrate_percent'),fmt:pct,better:'high',bar:'pct',unit:' pp'}
+    ]},
+    {t:'Overview',rows:[
+      {l:'Highest place',get:path('highest_leaderboard_place'),fmt:place,better:'low'},
+      {l:'Highest tier',get:function(P){ return tierScore(P.st&&P.st.highest_tier); },fmt:function(v,P){ return S.txt(P.st.highest_tier); },better:'high',nodelta:true},
+      {l:'Peak rating',get:path('peak_rating'),fmt:S.int,better:'high'},
+      {l:'Avg lobby size',get:path('avg_lobby_size'),fmt:S.int,better:null},
+      {l:'Time played',get:path('time_played_hours'),fmt:function(v,P){ return P.st.time_played||(one(v)+' h'); },better:'high',unit:' h'}
+    ]},
+    {t:'All modes',rows:[
+      {l:'Games played',get:path('all_modes.games_played'),fmt:S.int,better:'high'},
+      {l:'Wins',get:path('all_modes.wins'),fmt:S.int,better:'high'},
+      {l:'Losses',get:path('all_modes.losses'),fmt:S.int,better:'low'},
+      {l:'Win rate',get:path('all_modes.win_rate_pct'),fmt:pct,better:'high',bar:'pct',unit:' pp'}
+    ]},
+    {t:'Free For All',rows:[
+      {l:'Games',get:path('ffa.games'),fmt:S.int,better:'high'},
+      {l:'Win rate',get:path('ffa.win_rate_pct'),fmt:pct,better:'high',bar:'pct',unit:' pp'}
+    ]},
+    {t:'Team',rows:[
+      {l:'Games',get:path('team.games'),fmt:S.int,better:'high'},
+      {l:'Win rate',get:path('team.win_rate_pct'),fmt:pct,better:'high',bar:'pct',unit:' pp'}
+    ]},
+    {t:'Ranked',rows:[
+      {l:'Games',get:path('ranked.games'),fmt:S.int,better:'high'},
+      {l:'Win rate',get:path('ranked.win_rate_pct'),fmt:pct,better:'high',bar:'pct',unit:' pp'}
+    ]}
+  ];
+
+  function judge(m,va,vb){
+    if(!m.better||!S.isNum(va)||!S.isNum(vb)) return 'none';
+    if(va===vb) return 'tie';
+    var aBetter=(m.better==='high')?va>vb:va<vb;
+    return aBetter?'a':'b';
+  }
+  function barWidths(m,va,vb){
+    var nums=[va,vb].filter(S.isNum);
+    function w(v){
+      if(!S.isNum(v)) return 0;
+      var r;
+      if(m.bar==='pct') r=Math.max(0,Math.min(100,v));
+      else if(m.better==='low'){ var mn=Math.min.apply(null,nums); r=(v<=0)?100:mn/v*100; }
+      else{ var mx=Math.max.apply(null,nums); r=(mx<=0)?0:v/mx*100; }
+      return (r>0&&r<3)?3:r;
+    }
+    return [w(va),w(vb)];
+  }
+  function deltaText(m,res,va,vb){
+    if(m.nodelta||(res!=='a'&&res!=='b')) return '';
+    var diff=Math.abs(va-vb), txt=(Math.round(diff)===diff)?S.int(diff):S.dec(diff,1);
+    return (m.better==='high'?'+':'−')+txt+(m.unit||'');
+  }
+
+  /* ---- player profile (picks the right stats object, handles 2-account players) ---- */
+  function profile(id,acct){
+    var c=cands[id]; if(!c) return null;
+    var st=S.byId[id]||null, lb=true;
+    if(st&&st.error) st=null;
+    var first=S.MULTI[id];
+    if(first){
+      if(acct==='first'){ st=first; lb=false; }
+      else if(acct==='all'&&st){ st=S.combine(first,st); }
+    }
+    return {c:c,st:st,lb:lb,multi:!!first};
+  }
+
+  /* ---- candidates: leaderboard + competitive team ---- */
+  function ensure(id,name){
+    if(!cands[id]){ var v=window.FSC_VER.byId[id]; cands[id]={id:id,name:(v&&v.name)||name||id,ofName:name||id}; order.push(id); }
+    return cands[id];
+  }
+  function verOf(c){ return window.FSC_VER.byId[c.id]||null; }   /* verified list: discord_players.json */
+  function avatarOf(c){ var e=verOf(c); return (e&&e.avatar)||null; }
+  function isVerified(c){ return !!verOf(c); }
+
+  function buildCands(data){
+    var LBK=['place','rank','points','top_percent','ffa_wins','team_wins','ranked_wins','wins_total','losses_total','winrate_percent'];
+    (data.players||[]).forEach(function(p){
+      if(!p||!p.id) return;
+      var c=ensure(p.id,p.name);
+      LBK.forEach(function(k){ c[k]=(p[k]===undefined)?null:p[k]; });
+    });
+    (data.tracked_players||[]).forEach(function(t){
+      if(!t||!t.id) return;
+      var c=ensure(t.id,t.name);
+      if(t.in_table&&c.place==null){ c.place=t.table_place; c.rank=t.table_rank; c.points=t.table_points; }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#tab-team .tc-card'),function(card){
+      var pid=card.getAttribute('data-pid'), nmEl=card.querySelector('.tc-nm'); if(!pid||!nmEl) return;
+      var c=ensure(pid,nmEl.textContent.trim());
+      c.team=true;
+    });
+    order.sort(function(x,y){
+      var a=cands[x], b=cands[y], pa=a.place==null?1e9:a.place, pb=b.place==null?1e9:b.place;
+      return pa-pb||String(a.name).toLowerCase().localeCompare(String(b.name).toLowerCase());
+    });
+  }
+
+  /* ---- picker popover ---- */
+  function closePop(){ if(curPop){ curPop.remove(); curPop=null; } }
+  function avatarEl(c){
+    var av=el('span','av'), src=avatarOf(c);
+    if(src){ var im=document.createElement('img'); im.src=src; im.alt=''; im.loading='lazy'; im.referrerPolicy='no-referrer'; av.appendChild(im); }
+    return av;
+  }
+  function openPop(side,wrap){
+    closePop();
+    var other=side==='a'?state.b:state.a;
+    var pop=el('div','cp-pop'); pop.setAttribute('data-side',side);
+    var inp=document.createElement('input');
+    inp.type='search'; inp.className='cp-search'; inp.placeholder='Search player'; inp.autocomplete='off'; inp.spellcheck=false;
+    inp.setAttribute('aria-label','Search player');
+    var list=el('div','cp-list');
+    pop.appendChild(inp); pop.appendChild(list); wrap.appendChild(pop);
+    curPop=pop;
+    function fill(){
+      var q=inp.value.trim().toLowerCase(), n=0;
+      list.textContent='';
+      order.forEach(function(id){
+        var c=cands[id];
+        if(q&&(String(c.name)+' '+String(c.ofName||'')).toLowerCase().indexOf(q)===-1) return;
+        n++;
+        var b=el('button','cp-item'+(id===other?' dis':'')); b.type='button'; b.setAttribute('data-id',id);
+        if(id===other) b.disabled=true;
+        b.appendChild(avatarEl(c));
+        var t=el('span','t'); t.appendChild(el('b',null,c.name));
+        var sub=[]; if(c.place!=null) sub.push('#'+c.place); if(c.rank) sub.push(c.rank);
+        t.appendChild(el('small',null,sub.length?sub.join(' · '):'Not in leaderboard'));
+        b.appendChild(t);
+        if(c.team) b.appendChild(el('span','fse','FSE'));
+        list.appendChild(b);
+      });
+      if(!n) list.appendChild(el('div','cp-none','No players found'));
+    }
+    fill();
+    inp.addEventListener('input',fill);
+    inp.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){ closePop(); }
+      else if(e.key==='Enter'){ var f=list.querySelector('.cp-item:not(.dis)'); if(f) f.click(); }
+    });
+    list.addEventListener('click',function(e){
+      var b=e.target.closest('.cp-item'); if(!b||b.disabled) return;
+      state[side]=b.getAttribute('data-id'); state.acc[side]='all';
+      closePop(); render();
+    });
+    inp.focus();
+  }
+  document.addEventListener('mousedown',function(e){
+    if(curPop&&!curPop.contains(e.target)&&!e.target.closest('.cp-change,.cp-choose')) closePop();
+  });
+
+  /* ---- Compare: charts, table, view tabs (pure SVG / HTML, no libraries) ---- */
+  var CA='#e6c158', CB='#5aa9ff', NS='http://www.w3.org/2000/svg';
+  var MODE_C={ffa:'#ff8a5b',team:'#4fd1c5',ranked:'#b57bff'};
+  var TIER_NAMES=['Iron','Bronze','Silver','Gold','Platinum','Diamond','Master','Grandmaster'];
+
+  function sv(tag,attrs,parent){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs) if(attrs[k]!=null) e.setAttribute(k,attrs[k]);
+    if(parent) parent.appendChild(e);
+    return e;
+  }
+  function stx(parent,x,y,text,attrs){ var t=sv('text',Object.assign({x:x,y:y},attrs||{}),parent); t.textContent=text; return t; }
+  function nice(max){
+    if(!(max>0)) return 1;
+    var p=Math.pow(10,Math.floor(Math.log10(max))), s=[1,1.5,2,2.5,3,4,5,6,8,10];
+    for(var i=0;i<s.length;i++) if(s[i]*p>=max) return s[i]*p;
+    return 10*p;
+  }
+  function numOr0(v){ return S.isNum(v)?v:0; }
+  function cardEl(title,sub,cls){
+    var c=el('div','cx-card'+(cls?' '+cls:'')); c.appendChild(el('div','cx-h',title));
+    if(sub) c.appendChild(el('div','cx-sub',sub));
+    return c;
+  }
+  function legendEl(items){
+    var l=el('div','cx-legend');
+    items.forEach(function(it){ var s=el('span'), i=el('i'); i.style.background=it[1]; s.appendChild(i); s.appendChild(document.createTextNode(it[0])); l.appendChild(s); });
+    return l;
+  }
+  function pName(P){ return P.c.name; }
+  function pLegend(A,B){ return legendEl([[pName(A),CA],[pName(B),CB]]); }
+  function clip100(v){ return Math.max(0,Math.min(100,v)); }
+  function cleanNum(v){ return String(Math.round(v*10)/10); }
+
+  /* 1. radar: win rates are real %, volume stats are relative to the better of the two players */
+  function radarChart(A,B){
+    var axes=[
+      {l:'Win rate',f:path('all_modes.win_rate_pct'),t:'p',fmt:pct},
+      {l:'FFA win rate',f:path('ffa.win_rate_pct'),t:'p',fmt:pct},
+      {l:'Team win rate',f:path('team.win_rate_pct'),t:'p',fmt:pct},
+      {l:'Ranked win rate',f:path('ranked.win_rate_pct'),t:'p',fmt:pct},
+      {l:'Peak rating',f:path('peak_rating'),t:'r',fmt:S.int},
+      {l:'Games played',f:path('all_modes.games_played'),t:'r',fmt:S.int},
+      {l:'Time played',f:path('time_played_hours'),t:'r',fmt:function(v){ return one(v)+' h'; }},
+      {l:'Clan points',f:lbf('points'),t:'r',fmt:cleanNum}
+    ];
+    var W=520, H=350, cx=260, cy=176, R=110, n=axes.length;
+    var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,'class':'cx-svg',role:'img','aria-label':'Radar chart of both players'});
+    function pt(i,r){ var a=-Math.PI/2+i*2*Math.PI/n; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+    function poly(vals){ return vals.map(function(v,i){ var p=pt(i,R*v/100); return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' '); }
+    [25,50,75,100].forEach(function(r){
+      sv('polygon',{points:poly(axes.map(function(){ return r; })),fill:r===100?'rgba(255,255,255,.03)':'none',stroke:'#2a2a2e','stroke-width':1},svg);
+    });
+    axes.forEach(function(a,i){
+      var e=pt(i,R); sv('line',{x1:cx,y1:cy,x2:e[0].toFixed(1),y2:e[1].toFixed(1),stroke:'#2a2a2e','stroke-width':1},svg);
+      var lp=pt(i,R+16), c=Math.cos(-Math.PI/2+i*2*Math.PI/n), s=Math.sin(-Math.PI/2+i*2*Math.PI/n);
+      stx(svg,lp[0].toFixed(1),(lp[1]+(s>.3?9:(s<-.3?-2:4))).toFixed(1),a.l,{'text-anchor':c>.3?'start':(c<-.3?'end':'middle'),'class':'cx-ax'});
+      var va=a.f(A), vb=a.f(B), mx=Math.max(numOr0(va),numOr0(vb));
+      a.v=[va,vb];
+      a.nv=a.v.map(function(v){ if(!S.isNum(v)) return 0; return a.t==='p'?clip100(v):(mx>0?v/mx*100:0); });
+    });
+    var orig='transform-origin:'+cx+'px '+cy+'px';
+    [[0,CA],[1,CB]].forEach(function(k){
+      var g=sv('g',{'class':'cx-pop',style:orig+';animation-delay:'+(k[0]*.12)+'s'},svg);
+      sv('polygon',{points:poly(axes.map(function(a){ return a.nv[k[0]]; })),fill:k[1],'fill-opacity':.2,stroke:k[1],'stroke-width':2.2,'stroke-linejoin':'round'},g);
+      axes.forEach(function(a,i){
+        var p=pt(i,R*a.nv[k[0]]/100), d=sv('circle',{cx:p[0].toFixed(1),cy:p[1].toFixed(1),r:3.6,fill:k[1],stroke:'#141416','stroke-width':1.5},g);
+        var tt=sv('title',{},d); tt.textContent=(k[0]?pName(B):pName(A))+' · '+a.l+': '+(S.isNum(a.v[k[0]])?a.fmt(a.v[k[0]]):'—');
+      });
+    });
+    return svg;
+  }
+
+  /* 2. donut / pie */
+  function donutEl(parts,big,small){
+    var tot=0; parts.forEach(function(p){ tot+=numOr0(p.v); });
+    var C=2*Math.PI*44, svg=sv('svg',{viewBox:'0 0 120 120','class':'cx-svg cx-dsv',role:'img'});
+    sv('circle',{cx:60,cy:60,r:44,fill:'none',stroke:'#2a2a2e','stroke-width':15},svg);
+    var cum=0, many=parts.filter(function(p){ return p.v>0; }).length>1;
+    if(tot>0) parts.forEach(function(p){
+      if(!(p.v>0)) return;
+      var len=p.v/tot*C, vis=Math.max(.5,len-(many?2.2:0));
+      var c=sv('circle',{cx:60,cy:60,r:44,fill:'none',stroke:p.c,'stroke-width':15,transform:'rotate(-90 60 60)','stroke-dashoffset':(-cum).toFixed(2),'class':'cx-seg'},svg);
+      c.style.setProperty('--l',vis.toFixed(2)); c.style.setProperty('--g',(C-vis).toFixed(2)); c.style.setProperty('--c',C.toFixed(2));
+      cum+=len;
+    });
+    stx(svg,60,big.length>5?62:63,big,{'text-anchor':'middle','class':'cx-dbig'});
+    stx(svg,60,76,small,{'text-anchor':'middle','class':'cx-dsm'});
+    return {svg:svg,total:tot};
+  }
+  function donutBlock(P,color,parts,big,small){
+    var d=el('div','cx-donut'), nm=el('div','cx-pn',pName(P)); nm.style.color=color; d.appendChild(nm);
+    var r=donutEl(parts,big,small); d.appendChild(r.svg);
+    var lg=el('div','cx-lg');
+    parts.forEach(function(p){
+      var row=el('div','cx-lgr'), i=el('i'); i.style.background=p.c; row.appendChild(i);
+      row.appendChild(el('span',null,p.l)); row.appendChild(el('b',null,S.isNum(p.v)?S.int(p.v):'—'));
+      row.appendChild(el('em',null,(r.total>0&&S.isNum(p.v))?Math.round(p.v/r.total*100)+'%':''));
+      lg.appendChild(row);
+    });
+    d.appendChild(lg);
+    return d;
+  }
+
+  /* 3. grouped bar chart (A and B per category) */
+  function barsChart(cats,isPct,fmt){
+    var W=520, H=260, L=46, Rm=8, T=20, Bm=34, iw=W-L-Rm, ih=H-T-Bm;
+    var vals=[1]; cats.forEach(function(c){ vals.push(numOr0(c.a),numOr0(c.b)); });
+    var mx=isPct?100:nice(Math.max.apply(null,vals));
+    var svg=sv('svg',{viewBox:'0 0 '+W+' '+H,'class':'cx-svg',role:'img'});
+    for(var i=0;i<=4;i++){
+      var y=T+ih-ih*i/4;
+      sv('line',{x1:L,y1:y,x2:W-Rm,y2:y,stroke:'#2a2a2e','stroke-width':1},svg);
+      stx(svg,L-8,y+4,isPct?Math.round(mx*i/4)+'%':S.int(mx*i/4),{'text-anchor':'end'});
+    }
+    var gw=iw/cats.length, bw=Math.min(30,gw/3.4);
+    cats.forEach(function(c,ci){
+      var mid=L+gw*ci+gw/2;
+      [[c.a,CA,-bw-5],[c.b,CB,5]].forEach(function(b,k){
+        var x=mid+b[2];
+        if(!S.isNum(b[0])){ stx(svg,x+bw/2,T+ih-6,'—',{'text-anchor':'middle'}); return; }
+        var h=Math.max(2,ih*Math.min(1,b[0]/mx)), y=T+ih-h;
+        var r=sv('rect',{x:x.toFixed(1),y:y.toFixed(1),width:bw,height:h.toFixed(1),rx:4,fill:b[1],'class':'cx-grow',style:'animation-delay:'+(ci*.07+k*.05)+'s'},svg);
+        var tt=sv('title',{},r); tt.textContent=(k?'':'')+fmt(b[0]);
+        stx(svg,(x+bw/2).toFixed(1),(y-6).toFixed(1),fmt(b[0]),{'text-anchor':'middle','class':'cx-tv'});
+      });
+      stx(svg,mid,H-12,c.l,{'text-anchor':'middle','class':'cx-ax'});
+    });
+    return svg;
+  }
+
+  /* 4. clan contribution + wins split (leaderboard counters) */
+  function winsStack(P,color){
+    var c=P.c, box=el('div','cx-stk');
+    var defs=[['FFA','ffa_wins',MODE_C.ffa],['Team','team_wins',MODE_C.team],['Ranked','ranked_wins',MODE_C.ranked]];
+    var vals=defs.map(function(d){ return P.lb?c[d[1]]:null; }), tot=0;
+    vals.forEach(function(v){ tot+=numOr0(v); });
+    var t=el('div','t'), nm=el('span',null,pName(P)); nm.style.color=color; t.appendChild(nm);
+    t.appendChild(el('span',null,tot>0?S.int(tot)+' clan wins':'no clan wins'));
+    box.appendChild(t);
+    var bar=el('div','cx-bar3');
+    if(tot>0) defs.forEach(function(d,i){
+      var v=vals[i]; if(!(v>0)) return;
+      var s=el('i',null,S.int(v)); s.style.background=d[2]; s.style.flexGrow=v; s.title=d[0]+': '+S.int(v); bar.appendChild(s);
+    });
+    else{ var e=el('i',null,'—'); e.style.background='#2a2a2e'; e.style.flexGrow=1; bar.appendChild(e); }
+    box.appendChild(bar);
+    return box;
+  }
+  function clanCard(A,B){
+    var pa=A.lb?A.c.points:null, pb=B.lb?B.c.points:null;
+    if(!S.isNum(pa)&&!S.isNum(pb)) return null;
+    var c=cardEl('Clan contribution','Leaderboard points and where the clan wins came from','wide'), body=el('div','cx-body');
+    var row=el('div','cx-clan');
+    [['a',A,pa],['b',B,pb]].forEach(function(x){
+      var n=el('div','n '+x[0]); n.appendChild(el('em',null,pName(x[1])));
+      n.appendChild(document.createTextNode(S.isNum(x[2])?cleanNum(x[2]):'—')); n.appendChild(el('small',null,'pts'));
+      row.appendChild(n);
+    });
+    body.appendChild(row);
+    var tug=el('div','cp-tug'), ia=el('i','a'), ib=el('i','b'), ta=numOr0(pa), tb=numOr0(pb);
+    ia.style.flexGrow=ta; ib.style.flexGrow=tb;
+    if(ta) tug.appendChild(ia); if(tb) tug.appendChild(ib);
+    body.appendChild(tug);
+    body.appendChild(winsStack(A,CA)); body.appendChild(winsStack(B,CB));
+    body.appendChild(legendEl([['FFA wins',MODE_C.ffa],['Team wins',MODE_C.team],['Ranked wins',MODE_C.ranked]]));
+    c.appendChild(body);
+    return c;
+  }
+
+  /* 5. tier ladder */
+  function ladderCard(A,B){
+    var sa=A.st&&A.st.highest_tier?tierScore(A.st.highest_tier):null, sb=B.st&&B.st.highest_tier?tierScore(B.st.highest_tier):null;
+    if(sa==null&&sb==null) return null;
+    var c=cardEl('Highest tier','Where each player peaked on the ranked ladder','wide'), body=el('div','cx-body'), lad=el('div','cx-lad'), row=el('div','row');
+    TIER_NAMES.forEach(function(t){ var i=el('i',null,t); i.style.background=S.tierColor(t); row.appendChild(i); });
+    lad.appendChild(row);
+    function pos(sc){ var b=Math.floor(sc/10), w=sc%10; return Math.max(7,Math.min(93,(b+Math.max(0,Math.min(1,(w-4)/6)))/TIER_NAMES.length*100)); }
+    [['a',A,sa],['b',B,sb]].forEach(function(x){
+      if(x[2]==null) return;
+      var pin=el('div','cx-pin '+x[0]); pin.style.left=pos(x[2])+'%';
+      pin.appendChild(el('b',null,pName(x[1])+' · '+x[1].st.highest_tier)); pin.appendChild(el('i'));
+      lad.appendChild(pin);
+    });
+    body.appendChild(lad); c.appendChild(body);
+    return c;
+  }
+
+  function buildCharts(A,B,secs){
+    var grid=el('div','cx-grid');
+
+    var wl=cardEl('Wins and losses','All modes'), bw=el('div','cx-body cx-duo');
+    [[A,CA],[B,CB]].forEach(function(x){
+      var m=(x[0].st&&x[0].st.all_modes)||{};
+      bw.appendChild(donutBlock(x[0],x[1],[{l:'Wins',v:m.wins,c:'#5ee08a'},{l:'Losses',v:m.losses,c:'#ff6b6b'}],S.isNum(m.win_rate_pct)?S.pc(m.win_rate_pct,1):'—','win rate'));
+    });
+    wl.appendChild(bw); grid.appendChild(wl);
+
+    var gm=cardEl('Games by mode','How each player splits their time'), bg=el('div','cx-body cx-duo');
+    [[A,CA],[B,CB]].forEach(function(x){
+      var s=x[0].st||{}, parts=[{l:'FFA',v:s.ffa&&s.ffa.games,c:MODE_C.ffa},{l:'Team',v:s.team&&s.team.games,c:MODE_C.team},{l:'Ranked',v:s.ranked&&s.ranked.games,c:MODE_C.ranked}];
+      var tot=0; parts.forEach(function(p){ tot+=numOr0(p.v); });
+      bg.appendChild(donutBlock(x[0],x[1],parts,tot?S.int(tot):'—','games'));
+    });
+    gm.appendChild(bg); grid.appendChild(gm);
+
+    var wr=cardEl('Win rate by mode','Higher is better'), bwr=el('div','cx-body');
+    function wrOf(P,k){ var v=P.st&&P.st[k]&&P.st[k].win_rate_pct; return S.isNum(v)?v:null; }
+    bwr.appendChild(barsChart([
+      {l:'All modes',a:wrOf(A,'all_modes'),b:wrOf(B,'all_modes')},
+      {l:'FFA',a:wrOf(A,'ffa'),b:wrOf(B,'ffa')},
+      {l:'Team',a:wrOf(A,'team'),b:wrOf(B,'team')},
+      {l:'Ranked',a:wrOf(A,'ranked'),b:wrOf(B,'ranked')}
+    ],true,function(v){ return S.pc(v,1); }));
+    bwr.appendChild(pLegend(A,B)); wr.appendChild(bwr); grid.appendChild(wr);
+
+    var gc=cardEl('Games played','Total and per mode'), bgc=el('div','cx-body');
+    function gOf(P,k){ var o=P.st&&P.st[k]; var v=k==='all_modes'?(o&&o.games_played):(o&&o.games); return S.isNum(v)?v:null; }
+    bgc.appendChild(barsChart([
+      {l:'All modes',a:gOf(A,'all_modes'),b:gOf(B,'all_modes')},
+      {l:'FFA',a:gOf(A,'ffa'),b:gOf(B,'ffa')},
+      {l:'Team',a:gOf(A,'team'),b:gOf(B,'team')},
+      {l:'Ranked',a:gOf(A,'ranked'),b:gOf(B,'ranked')}
+    ],false,function(v){ return S.int(v); }));
+    bgc.appendChild(pLegend(A,B)); gc.appendChild(bgc); grid.appendChild(gc);
+
+    var cl=clanCard(A,B); if(cl) grid.appendChild(cl);
+    var ld=ladderCard(A,B); if(ld) grid.appendChild(ld);
+    var c1=cardEl('Skill radar','Win rates are real percentages; the other axes are relative to the better player','wide'), b1=el('div','cx-body');
+    b1.appendChild(radarChart(A,B)); b1.appendChild(pLegend(A,B)); c1.appendChild(b1); grid.appendChild(c1);
+    return grid;
+  }
+
+  /* table view */
+  function buildTable(A,B,secs){
+    var c=el('div','cx-card'), sc=el('div','scroll'), t=el('table','cx-tbl');
+    var hr=el('tr'); hr.appendChild(el('th',null,'Stat'));
+    var ha=el('th','a',pName(A)), hb=el('th','b',pName(B)); hr.appendChild(ha); hr.appendChild(hb); hr.appendChild(el('th',null,'Difference'));
+    var th=el('thead'); th.appendChild(hr); t.appendChild(th);
+    var tb=el('tbody');
+    secs.forEach(function(sec){
+      var sr=el('tr','sec'), sd=el('td',null,sec.t); sd.colSpan=4; sr.appendChild(sd); tb.appendChild(sr);
+      sec.rows.forEach(function(r){
+        var tr=el('tr'); tr.appendChild(el('td','l',r.m.l));
+        var ca=el('td',r.res==='a'?'w-a':(r.res==='b'?'lose':''),S.isNum(r.va)?r.m.fmt(r.va,A):'—');
+        var cb=el('td',r.res==='b'?'w-b':(r.res==='a'?'lose':''),S.isNum(r.vb)?r.m.fmt(r.vb,B):'—');
+        var dt=deltaText(r.m,r.res,r.va,r.vb).replace(/^[+\u2212]/,'');
+        var cd=el('td','d'+(r.res==='a'?' a':(r.res==='b'?' b':'')),
+          r.res==='a'?'\u25C0 '+(dt||'ahead'):(r.res==='b'?(dt||'ahead')+' \u25B6':(r.res==='tie'?'tie':'\u2014')));
+        tr.appendChild(ca); tr.appendChild(cb); tr.appendChild(cd); tb.appendChild(tr);
+      });
+    });
+    t.appendChild(tb); sc.appendChild(t); c.appendChild(sc);
+    return c;
+  }
+
+  function viewTabs(){
+    var w=el('div','cx-tabs');
+    [['charts','Charts'],['h2h','Head to head'],['table','Table']].forEach(function(o){
+      var b=el('button',state.view===o[0]?'on':'',o[1]); b.type='button';
+      if(state.view===o[0]) b.setAttribute('aria-current','true');
+      b.addEventListener('click',function(){
+        if(state.view===o[0]) return;
+        var y=window.pageYOffset; state.view=o[0]; render(); window.scrollTo(0,y);
+      });
+      w.appendChild(b);
+    });
+    return w;
+  }
+
+  /* ---- rendering ---- */
+  function headCard(side,P,won,lead){
+    var c=el('div','cp-card '+side+(lead?' lead':''));
+    var wrap=el('div','cp-pickwrap');
+    function pickBtn(cls,label){
+      var b=el('button',cls,label); b.type='button'; b.setAttribute('data-side',side); b.setAttribute('aria-haspopup','listbox');
+      b.addEventListener('click',function(){
+        if(curPop&&curPop.getAttribute('data-side')===side) closePop(); else openPop(side,wrap);
+      });
+      wrap.appendChild(b);
+    }
+    if(!P){
+      c.classList.add('empty');
+      pickBtn('cp-choose','+ Choose player');
+      c.appendChild(wrap);
+      return c;
+    }
+    var p=P.c;
+    if(lead){ var bd=el('span','cp-badge'); bd.appendChild(document.createElement('i')); bd.appendChild(document.createTextNode('LEADS')); c.appendChild(bd); }
+    var av=el('div','cp-av'), src=avatarOf(p);
+    if(src){ var im=document.createElement('img'); im.src=src; im.alt=''; im.referrerPolicy='no-referrer'; av.appendChild(im); }
+    c.appendChild(av);
+    var nm=el('div','cp-name'), a=el('a',null,p.name);
+    a.href='https://ofstats.io/player/'+encodeURIComponent(p.id); a.target='_blank'; a.rel='noopener';
+    nm.appendChild(a);
+    if(isVerified(p)){ nm.appendChild(document.createTextNode(' ')); var ck=el('span','chk','✓'); ck.title='Verified'; nm.appendChild(ck); }
+    c.appendChild(nm);
+    var rk=el('div','cp-rank'+((p.place>=1&&p.place<=3)?' t'+p.place:''));
+    if(P.lb&&p.place!=null&&UI.isRated(p.rank)){ rk.appendChild(UI.rankIcon(p.rank,26,p.place<=3)); rk.appendChild(el('span',null,UI.rankName(p.rank))); }
+    else{ rk.classList.add('none'); rk.textContent=(P.lb&&p.place!=null)?'in leaderboard, not rated':'not in leaderboard'; }
+    c.appendChild(rk);
+    var tags=el('div','cp-tags');
+    if(P.st&&P.st.highest_tier){ var tg=el('span','cp-tag',P.st.highest_tier); tg.style.color=S.tierColor(P.st.highest_tier); tags.appendChild(tg); }
+    if(p.team) tags.appendChild(el('span','cp-tag','FSE team'));
+    if(tags.childNodes.length) c.appendChild(tags);
+    c.appendChild(el('div','cp-info',p.place!=null?'Leaderboard #'+p.place+(S.isNum(p.points)?' · Clan contribution '+(Math.round(p.points*10)/10)+' pts':''):'Not in the leaderboard'));
+    if(P.multi){
+      var sel=el('select','ps-sel'); sel.setAttribute('aria-label','Account');
+      [['all','All accounts'],['first','First account'],['second','Second account']].forEach(function(o){
+        var op=el('option',null,o[1]); op.value=o[0]; sel.appendChild(op);
+      });
+      sel.value=state.acc[side];
+      sel.addEventListener('change',function(){ state.acc[side]=sel.value; render(); });
+      c.appendChild(sel);
+    }
+    if(won!=null){ var w=el('div','cp-won'); w.appendChild(document.createTextNode('Ahead in ')); w.appendChild(el('b',null,String(won))); w.appendChild(document.createTextNode(' stats')); c.appendChild(w); }
+    pickBtn('cp-change','Change player ▾');
+    c.appendChild(wrap);
+    return c;
+  }
+
+  function sideEl(s,m,P,v,w,res,delta,fills){
+    var win=(res===s), lose=((res==='a'||res==='b')&&res!==s);
+    var d=el('div','cp-side '+s+(win?' win':'')+(lose?' lose':''));
+    var top=el('div','cp-top');
+    if(win&&delta) top.appendChild(el('span','cp-delta',delta));
+    if(win) top.appendChild(el('span','cp-up'));
+    top.appendChild(el('span','cp-val',S.isNum(v)?m.fmt(v,P):'—'));
+    d.appendChild(top);
+    var bar=el('div','cp-bar'), fill=document.createElement('i');
+    bar.appendChild(fill); d.appendChild(bar);
+    fills.push([fill,w]);
+    return d;
+  }
+
+  function render(){
+    closePop();
+    root.textContent='';
+    var A=state.a?profile(state.a,state.acc.a):null;
+    var B=state.b?profile(state.b,state.acc.b):null;
+    var ready=!!(A&&B);
+
+    /* judge every row once */
+    var wa=0, wb=0, ties=0, secs=[];
+    if(ready){
+      SECTIONS.forEach(function(sec){
+        var rows=[], sa=0, sb=0, any=false;
+        sec.rows.forEach(function(m){
+          var va=m.get(A), vb=m.get(B);
+          if(!S.isNum(va)&&!S.isNum(vb)) return;          /* nothing to show for either player */
+          var res=judge(m,va,vb);
+          if(res==='a'){ sa++; wa++; } else if(res==='b'){ sb++; wb++; } else if(res==='tie') ties++;
+          rows.push({m:m,va:va,vb:vb,res:res}); any=true;
+        });
+        if(any) secs.push({t:sec.t,rows:rows,sa:sa,sb:sb});
+      });
+    }
+    var leadA=ready&&wa>wb, leadB=ready&&wb>wa;
+
+    var head=el('div','cp-head');
+    head.appendChild(headCard('a',A,ready?wa:null,leadA));
+    var mid=el('div','cp-mid');
+    mid.appendChild(el('div','cp-vs','VS'));
+    var sw=el('button','cp-swap','⇄'); sw.type='button'; sw.title='Swap players'; sw.setAttribute('aria-label','Swap players');
+    if(!A&&!B) sw.disabled=true;
+    sw.addEventListener('click',function(){
+      var t=state.a; state.a=state.b; state.b=t;
+      t=state.acc.a; state.acc.a=state.acc.b; state.acc.b=t;
+      render();
+    });
+    mid.appendChild(sw);
+    head.appendChild(mid);
+    head.appendChild(headCard('b',B,ready?wb:null,leadB));
+    root.appendChild(head);
+
+    if(!ready){
+      var emp=el('div','cp-panel cp-panel-empty'); emp.appendChild(el('div','cp-empty','Choose two players to compare their stats side by side.'));
+      root.appendChild(emp);
+      return;
+    }
+
+    /* tug-of-war summary */
+    var sum=el('div','cp-sum'), row=el('div','cp-sumrow');
+    row.appendChild(el('div','cp-sumn a',String(wa)));
+    var lbl=el('div','cp-sumlbl','Stats won');
+    lbl.appendChild(el('small',null,ties?ties+(ties===1?' tie':' ties'):'head to head'));
+    row.appendChild(lbl);
+    row.appendChild(el('div','cp-sumn b',String(wb)));
+    sum.appendChild(row);
+    var tug=el('div','cp-tug'), ia=el('i','a'), it=el('i','t'), ib=el('i','b');
+    ia.style.flexGrow=wa; it.style.flexGrow=ties; ib.style.flexGrow=wb;
+    if(wa||wb||ties){ if(wa) tug.appendChild(ia); if(ties) tug.appendChild(it); if(wb) tug.appendChild(ib); }
+    sum.appendChild(tug);
+    root.appendChild(sum);
+
+    /* view switcher: charts / head to head / table */
+    root.appendChild(viewTabs());
+    if(state.view==='charts'){ root.appendChild(buildCharts(A,B,secs)); return; }
+    if(state.view==='table'){ root.appendChild(buildTable(A,B,secs)); return; }
+
+    /* stat rows */
+    var panel=el('div','cp-panel'), fills=[];
+    secs.forEach(function(sec){
+      var h=el('div','cp-sech'); h.appendChild(el('span',null,sec.t));
+      if(sec.sa||sec.sb){
+        var sc=el('span','cp-sc'); sc.appendChild(el('b','a',String(sec.sa))); sc.appendChild(document.createTextNode(' : ')); sc.appendChild(el('b','b',String(sec.sb)));
+        h.appendChild(sc);
+      }
+      panel.appendChild(h);
+      sec.rows.forEach(function(r){
+        var w=barWidths(r.m,r.va,r.vb), delta=deltaText(r.m,r.res,r.va,r.vb);
+        var rw=el('div','cp-row'); rw.setAttribute('data-res',r.res);
+        rw.appendChild(sideEl('a',r.m,A,r.va,w[0],r.res,delta,fills));
+        var lb=el('div','cp-label',r.m.l);
+        if(r.res==='tie') lb.appendChild(el('em',null,'tie'));
+        rw.appendChild(lb);
+        rw.appendChild(sideEl('b',r.m,B,r.vb,w[1],r.res,delta,fills));
+        panel.appendChild(rw);
+      });
+    });
+    root.appendChild(panel);
+    /* grow the bars after the first paint so they animate in */
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ fills.forEach(function(f){ f[0].style.width=f[1]+'%'; }); }); });
+  }
+
+  /* "Compare" button inside a leaderboard dropdown */
+  function compareWith(id){
+    if(!cands[id]) return;
+    if(state.b===id){ state.b=state.a; state.acc.b=state.acc.a; }
+    state.a=id; state.acc.a='all';
+    if(state.b===state.a) state.b=null;
+    render();
+    var tab=document.querySelector('.lbnav button[data-tab="compare"]'); if(tab) tab.click();
+    window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+  }
+
+  window.FSC_DATA.then(function(data){
+    buildCands(data);
+    /* nobody is pre-selected: the person picks both players themselves */
+    render();
+  },function(){
+    root.textContent='';
+    root.appendChild(el('div','cp-panel cp-panel-empty')).appendChild(el('div','cp-empty','Stats unavailable'));
+  });
+})();
+</script>
+</body>
+</html>

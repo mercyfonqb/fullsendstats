@@ -1,0 +1,44 @@
+{
+  "team": [
+    {
+      "openfront_id": "8XtYOuc2",
+      "name": "Moka",
+      "discord_id": "803976151688019968",
+      "avatar": "https://cdn.discordapp.com/avatars/803976151688019968/0547ed773f61b4856ad8d3bed970697a.webp?size=128",
+      "roles": ["Main Competitive Team", "Team Lead"]
+    },
+    {
+      "openfront_id": "JMngHxBd",
+      "name": "Malignant_NarcissisT",
+      "discord_id": "1064604365765222471",
+      "avatar": "https://cdn.discordapp.com/avatars/1064604365765222471/e55c9bec2e12772cdbd63e51664771a4.webp?size=128",
+      "roles": ["Main Competitive Team"]
+    },
+    {
+      "openfront_id": "3qWpY6a0",
+      "name": "Orthros",
+      "discord_id": "667364621430161418",
+      "avatar": "https://cdn.discordapp.com/guilds/1365029406531391619/users/667364621430161418/avatars/0fc3737c84a373f580121fc8335965ca.webp?size=128",
+      "roles": ["Main Competitive Team"]
+    },
+    {
+      "openfront_id": "hhlPJdI5",
+      "name": "grush",
+      "discord_id": "196456435046023168",
+      "avatar": "https://cdn.discordapp.com/avatars/196456435046023168/44f5e8f3df1215823e84cd2bc0c3e236.webp?size=128",
+      "roles": ["Reserved Team"]
+    },
+    {
+      "openfront_id": "rh3IXtrh",
+      "name": "Baumi",
+      "roles": ["Reserved Team"]
+    },
+    {
+      "openfront_id": "fbynSduF",
+      "name": "Ludvika",
+      "discord_id": "1460167046724587710",
+      "avatar": "https://cdn.discordapp.com/avatars/1460167046724587710/26f757319a17caf92f2902dccecfd699.webp?size=128",
+      "roles": ["Reserved Team"]
+    }
+  ]
+}
