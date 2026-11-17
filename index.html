@@ -5,10 +5,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fullsendstats - FSC clan official leaderboard</title>
+<meta name="description" content="Full Send Clan [FSC] — The Full Sender of Openfront. We must FULL SEND everyone and MOG them out of spire because everyone else are lowkey cheaters and can&#39;t handle our AURA.">
+<meta name="theme-color" content="#f5c542">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Fullsendstats - FSC clan official leaderboard">
-<meta property="og:url" content="https://fullsendstats.malignant.workers.dev/">
-<meta name="twitter:card" content="summary_large_image">
+<meta property="og:description" content="Full Send Clan [FSC] — The Full Sender of Openfront. We must FULL SEND everyone and MOG them out of spire because everyone else are lowkey cheaters and can&#39;t handle our AURA.">
+<meta property="og:url" content="https://fullsendstats.com/">
+<meta property="og:image" content="https://fullsendstats.com/logo.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fullsendstats - FSC clan official leaderboard">
+<meta name="twitter:description" content="Full Send Clan [FSC] — The Full Sender of Openfront. We must FULL SEND everyone and MOG them out of spire because everyone else are lowkey cheaters and can&#39;t handle our AURA.">
+<meta name="twitter:image" content="https://fullsendstats.com/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -736,6 +746,7 @@ footer{max-width:1000px; margin:0 auto; padding:24px clamp(18px,2vw,28px) 0; col
     </div>
     <div class="tagline">FSC clan official leaderboard</div>
     <div class="stamp">The ranking is updated every hour</div>
+    <div class="stamp" id="lastUpdated" hidden>Last updated: <span id="lastUpdatedTime"></span></div>
   </header>
   <div class="lbhead">
     <div class="lbbar">
@@ -1079,8 +1090,12 @@ footer{max-width:1000px; margin:0 auto; padding:24px clamp(18px,2vw,28px) 0; col
     });
   }
   input.addEventListener('input',filter);
-  window.FSC_TEAM.then(function(){ filter(); });
-  window.lbRefresh=function(){ rows=Array.prototype.slice.call(tbody.querySelectorAll('tr')).filter(function(r){ return r!==empty&&!r.classList.contains('lb-detail'); }); filter(); };
+  /* defined BEFORE anything that can fail: the leaderboard script calls it after it renders the rows */
+  window.lbRefresh=function(){ rows=Array.prototype.slice.call(tbody.querySelectorAll('tr')).filter(function(r){ return r!==empty&&!r.classList.contains('lb-detail')&&!r.classList.contains('lb-status'); }); filter(); };
+  /* window.FSC_TEAM is created by a LATER script, so it does not exist yet when this one runs */
+  window.addEventListener('DOMContentLoaded',function(){
+    if(window.FSC_TEAM&&window.FSC_TEAM.then) window.FSC_TEAM.then(function(){ filter(); },function(){});
+  });
 })();
 </script>
 <script>
@@ -1361,6 +1376,14 @@ Promise.all([window.FSC_PLAYERS,window.FSC_TEAM]).then(function(){
   /* query string + no-store: always fetch the fresh file, never a cached copy */
   window.FSC_DATA
     .then(function(data){
+      /* "Last updated" line: generated_at is written by clan_parser.py in UTC */
+      if(data&&data.generated_at){
+        var gd=new Date(data.generated_at);
+        if(!isNaN(gd.getTime())){
+          var lu=document.getElementById('lastUpdated'), lt=document.getElementById('lastUpdatedTime');
+          if(lu&&lt){ lt.textContent=gd.toISOString().slice(0,16).replace('T',' ')+' UTC'; lu.hidden=false; }
+        }
+      }
       /* total clan members (e.g. 387) -> badge under the logo */
       var total=data&&Number(data.clan_total_members);
       if(total>0){
