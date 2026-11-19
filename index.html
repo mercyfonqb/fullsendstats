@@ -901,22 +901,22 @@ footer{max-width:1000px; margin:0 auto; padding:24px clamp(18px,2vw,28px) 0; col
         <colgroup><col style="width:16%"><col style="width:44%"><col style="width:40%"></colgroup>
         <thead><tr><th></th><th>Rank</th><th>Percentage</th></tr></thead>
         <tbody>
-          <tr><td class="sym">☘︎</td><td>MITOCHONDRIA</td><td class="pct">all other members</td></tr>
+          <tr><td class="sym">☘︎</td><td>FULLSEND APPRENTICE</td><td class="pct">all other members</td></tr>
           <tr><td class="sym">│✧✧✧│¹</td><td>HALF SENDER</td><td class="pct">top 80%</td></tr>
           <tr><td class="sym">│✧✧✧│²</td><td>SENDER</td><td class="pct">top 70%</td></tr>
           <tr><td class="sym">│✧✧✧│³</td><td>MINI FULLSENDER</td><td class="pct">top 60%</td></tr>
           <tr><td class="sym">│︽︽︽│¹</td><td>FULLSENDER</td><td class="pct">top 50%</td></tr>
           <tr><td class="sym">│︽︽︽│²</td><td>TRUE FULLSENDER</td><td class="pct">top 40%</td></tr>
           <tr><td class="sym">│︽︽︽│³</td><td>ELITE FULLSENDER</td><td class="pct">top 30%</td></tr>
-          <tr><td class="sym">░│=★=│░</td><td>FULLSEND TRAINER</td><td class="pct">top 20%</td></tr>
-          <tr><td class="sym">░│★★│░</td><td>MASTER OF FULLSENDING</td><td class="pct">top 15%</td></tr>
-          <tr><td class="sym">░│★★★│░</td><td>GRANDFULLSENDER</td><td class="pct">top 10%</td></tr>
+          <tr><td class="sym">░│=★=│░</td><td>MASTER FULLSENDER</td><td class="pct">top 20%</td></tr>
+          <tr><td class="sym">░│★★│░</td><td>GRAND FULLSENDER</td><td class="pct">top 15%</td></tr>
+          <tr><td class="sym">░│★★★│░</td><td>FULLSENDER LEGEND</td><td class="pct">top 10%</td></tr>
           <tr class="gap"><td colspan="3"></td></tr>
-          <tr class="god"><td class="sym">❰《〔𖠦〕》❱</td><td>GOD OF FULLSENDING</td><td class="pct">top 5%</td></tr>
+          <tr class="god"><td class="sym">❰《〔𖠦〕》❱</td><td>FULLSENDER GOD</td><td class="pct">top 5%</td></tr>
         </tbody>
       </table>
     </div>
-        <div class="note-wrap rank-note"><p class="note">Mitochondria are not rated, as this is not a ranked role.</p></div>
+        <div class="note-wrap rank-note"><p class="note">Fullsend Apprentices are not rated, as this is not a ranked role.</p></div>
       </div>
     </details>
   </section>
@@ -1219,13 +1219,13 @@ Promise.all([window.FSC_PLAYERS,window.FSC_TEAM]).then(function(){
   /* Check mark, ofstats link and avatar of verified players: read from discord_players.json (window.FSC_VER). */
   /* rank name in the JSON -> symbol shown in the table */
   var RANK_SYMBOL={
-    "GOD OF FULLSENDING":"❰《〔𖠦〕》❱",
+    "FULLSENDER GOD":"❰《〔𖠦〕》❱",
 
-    "GRANDFULLSENDER":"★★★",
+    "FULLSENDER LEGEND":"★★★",
 
-    "MASTER OF FULLSENDING":"★★",
+    "GRAND FULLSENDER":"★★",
 
-    "FULLSEND TRAINER":"★",
+    "MASTER FULLSENDER":"★",
 
     "ELITE FULLSENDER":"︽︽︽",
 
@@ -1248,19 +1248,19 @@ Promise.all([window.FSC_PLAYERS,window.FSC_TEAM]).then(function(){
   window.FSC_UI={rankSymbol:RANK_SYMBOL,norm:norm};   /* shared with the compare tab */
 
   /* ---------- Rank helpers + icons (used by team cards, leaderboard dropdowns and compare) ---------- */
-  var RANK_ORDER=['HALF SENDER','SENDER','MINI FULLSENDER','FULLSENDER','TRUE FULLSENDER','ELITE FULLSENDER','FULLSEND TRAINER','MASTER OF FULLSENDING','GRANDFULLSENDER','GOD OF FULLSENDING'];
+  var RANK_ORDER=['HALF SENDER','SENDER','MINI FULLSENDER','FULLSENDER','TRUE FULLSENDER','ELITE FULLSENDER','MASTER FULLSENDER','GRAND FULLSENDER','FULLSENDER LEGEND','FULLSENDER GOD'];
   var RANK_META={
-    'MITOCHONDRIA':{g:'mito',n:0,pct:'all other members'},
+    'FULLSEND APPRENTICE':{g:'mito',n:0,pct:'all other members'},
     'HALF SENDER':{g:'spark',n:1,pct:'top 80%'},
     'SENDER':{g:'spark',n:2,pct:'top 70%'},
     'MINI FULLSENDER':{g:'spark',n:3,pct:'top 60%'},
     'FULLSENDER':{g:'chev',n:1,pct:'top 50%'},
     'TRUE FULLSENDER':{g:'chev',n:2,pct:'top 40%'},
     'ELITE FULLSENDER':{g:'chev',n:3,pct:'top 30%'},
-    'FULLSEND TRAINER':{g:'star',n:1,pct:'top 20%'},
-    'MASTER OF FULLSENDING':{g:'star',n:2,pct:'top 15%'},
-    'GRANDFULLSENDER':{g:'star',n:3,pct:'top 10%'},
-    'GOD OF FULLSENDING':{g:'god',n:1,pct:'top 5%'}
+    'MASTER FULLSENDER':{g:'star',n:1,pct:'top 20%'},
+    'GRAND FULLSENDER':{g:'star',n:2,pct:'top 15%'},
+    'FULLSENDER LEGEND':{g:'star',n:3,pct:'top 10%'},
+    'FULLSENDER GOD':{g:'god',n:1,pct:'top 5%'}
   };
   var RK_COL={
     spark:{m:'#5fd3c4',d:'#16524d'},

@@ -13,10 +13,10 @@ PLAYERS_FILE = Path(__file__).with_name("discord_players.json")
 THREAD_ID = 1569558624508841986
 
 RANK_ROLE_NAMES = {
-    "GOD OF FULLSENDING": "GOD OF FULLSENDING",
-    "GRANDFULLSENDER": "GRANDFULLSENDER",
-    "MASTER OF FULLSENDING": "MASTER OF FULLSENDING",
-    "FULLSEND TRAINER": "FULLSEND TRAINER",
+    "FULLSENDER GOD": "FULLSENDER GOD",
+    "FULLSENDER LEGEND": "FULLSENDER LEGEND",
+    "GRAND FULLSENDER": "GRAND FULLSENDER",
+    "MASTER FULLSENDER": "MASTER FULLSENDER",
     "ELITE FULLSENDER": "ELITE FULLSENDER",
     "TRUE FULLSENDER": "TRUE FULLSENDER",
     "FULLSENDER": "FULLSENDER",
@@ -27,7 +27,7 @@ RANK_ROLE_NAMES = {
 RANKS = list(RANK_ROLE_NAMES)
 
 # This role is removed as soon as a member holds any of the 10 rank roles
-MITOCHONDRIA_ROLE_NAME = "MITOCHONDRIA"
+APPRENTICE_ROLE_NAME = "FULLSEND APPRENTICE"
 
 IGNORED_RANKS = {"NOT RATED"}
 
@@ -225,9 +225,9 @@ async def run(client: discord.Client) -> None:
     role_id_to_rank = {r.id: rank for rank, r in rank_roles.items()}
     # RANKS goes from highest to lowest: the lower the index, the higher the rank
     rank_order = {rank: i for i, rank in enumerate(RANKS)}
-    mito_role = find_role(guild, MITOCHONDRIA_ROLE_NAME)
+    mito_role = find_role(guild, APPRENTICE_ROLE_NAME)
     if mito_role is None:
-        log.warning("Role %s not found on the server - will not remove it", MITOCHONDRIA_ROLE_NAME)
+        log.warning("Role %s not found on the server - will not remove it", APPRENTICE_ROLE_NAME)
 
     for discord_id, player_id in verified.items():
         rank = ranks.get(player_id)
@@ -260,7 +260,7 @@ async def run(client: discord.Client) -> None:
         to_remove = [r for r in member.roles if r.id in rank_role_ids and r.id != keep_role.id]
         need_add = keep_role not in member.roles
 
-        # member has (or is getting) one of the 10 ranks -> MITOCHONDRIA is removed
+        # member has (or is getting) one of the 10 ranks -> FULLSEND APPRENTICE is removed
         extra = [mito_role] if mito_role is not None and mito_role in member.roles else []
 
         if target_role is None and not to_remove and not extra:

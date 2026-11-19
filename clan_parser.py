@@ -49,10 +49,10 @@ BASE = "https://api.openfront.io/public"
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 
 RANKS = [
-    (0.05, "GOD OF FULLSENDING"),
-    (0.10, "GRANDFULLSENDER"),
-    (0.15, "MASTER OF FULLSENDING"),
-    (0.20, "FULLSEND TRAINER"),
+    (0.05, "FULLSENDER GOD"),
+    (0.10, "FULLSENDER LEGEND"),
+    (0.15, "GRAND FULLSENDER"),
+    (0.20, "MASTER FULLSENDER"),
     (0.30, "ELITE FULLSENDER"),
     (0.40, "TRUE FULLSENDER"),
     (0.50, "FULLSENDER"),
