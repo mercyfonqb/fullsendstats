@@ -7,10 +7,10 @@ from pathlib import Path
 import discord
 
 TOKEN = os.environ["DISCORD_BOT_TOKEN"]
-GUILD_ID = 1569558622956945488
+GUILD_ID = 1365029406531391619
 STATS_FILE = Path(__file__).with_name("fsc_stats.json")
 PLAYERS_FILE = Path(__file__).with_name("discord_players.json")
-THREAD_ID = 1569558624508841986
+THREAD_ID = 1574101795217743954
 
 RANK_ROLE_NAMES = {
     "FULLSENDER GOD": "FULLSENDER GOD",
@@ -30,6 +30,10 @@ RANKS = list(RANK_ROLE_NAMES)
 APPRENTICE_ROLE_NAME = "FULLSEND APPRENTICE"
 
 IGNORED_RANKS = {"NOT RATED"}
+
+# Old role "Fullsender" (without the ︽ icon). The bot must never see or touch it:
+# it is not given, not removed and not treated as a rank role.
+EXCLUDED_ROLE_IDS = {1433933616576069754}
 
 # Embed colors for thread notifications
 COLOR_FIRST_RANK = discord.Color.gold()
@@ -96,7 +100,11 @@ def load_places() -> tuple[dict[str, int], int | None]:
 
 
 def get_rank_roles(guild: discord.Guild) -> dict[str, discord.Role]:
-    by_name = {clean_role_name(r.name): r for r in guild.roles}
+    by_name = {
+        clean_role_name(r.name): r
+        for r in guild.roles
+        if r.id not in EXCLUDED_ROLE_IDS
+    }
     roles: dict[str, discord.Role] = {}
     for rank, role_name in RANK_ROLE_NAMES.items():
         role = by_name.get(role_name)
@@ -109,6 +117,8 @@ def get_rank_roles(guild: discord.Guild) -> dict[str, discord.Role]:
 
 def find_role(guild: discord.Guild, role_name: str) -> discord.Role | None:
     for r in guild.roles:
+        if r.id in EXCLUDED_ROLE_IDS:
+            continue
         if clean_role_name(r.name) == role_name:
             return r
     return None
